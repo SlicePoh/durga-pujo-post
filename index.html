@@ -459,7 +459,7 @@
         }
       }, []);
 
-      // Handle track changes cleanly on the single audio line
+      // Handle track changes cleanly on the single audio line without touching video
       useEffect(() => {
         const aud = audioRef.current;
         if (!aud) return;
@@ -616,12 +616,14 @@
       const videoRef = useRef(null);
       const audioPlayerRef = useRef(null);
 
+      // Changing track MUST NOT restart the video! Video stays in last 4-5s loop!
       const handleSetTrack = (idx) => {
         setCurrentTrackIndex(idx);
         localStorage.setItem('omni_pinned_track_index', idx);
+        setIntroFinished(true); // Ensures video stays continuously in 4-5s loop
       };
 
-      // Direct Automatic Video Playback on Mount (No user interaction needed!)
+      // Direct Automatic Video Playback on Mount
       useEffect(() => {
         const video = videoRef.current;
         if (video) {
@@ -629,7 +631,6 @@
           video.volume = 1.0;
           video.currentTime = 0;
           video.play().catch(e => {
-            // Fallback for strict browser policies
             console.log("Unmuted autoplay notice, retrying...", e);
             video.muted = true;
             video.play();
@@ -661,7 +662,7 @@
             }
           }
 
-          // Continuous Vibe Loop of last 5 seconds
+          // Continuous Vibe Loop of last 5 seconds (NEVER RESTARTS ON SONG CHANGE)
           if (t >= duration - 0.3) {
             const vibeLoopStart = Math.max(8.0, duration - 5.0);
             video.currentTime = vibeLoopStart;

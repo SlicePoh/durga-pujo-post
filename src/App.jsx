@@ -20,12 +20,14 @@ export default function App() {
   const videoRef = useRef(null);
   const audioPlayerRef = useRef(null);
 
+  // Changing track MUST NOT restart the video! Video stays in last 4-5s loop!
   const handleSetTrack = (idx) => {
     setCurrentTrackIndex(idx);
     localStorage.setItem('omni_pinned_track_index', idx);
+    setIntroFinished(true); // Ensures background video continues its 4-5s vibe loop without restarting
   };
 
-  // Direct Automatic Video Playback on Mount (No user click needed!)
+  // Direct Automatic Video Playback on Mount
   useEffect(() => {
     const video = videoRef.current;
     if (video) {
@@ -51,8 +53,6 @@ export default function App() {
 
       if (!introFinished) {
         if (t <= 8.0) {
-          // Video Audio: 100% (1.0) at 0s -> fades down to 70% (0.70) at 8s
-          // Music Audio: 20% (0.20) at 0s -> fades up to 100% (1.0) at 8s
           const prog = t / 8.0;
           video.volume = 1.0 - (0.30 * prog);
           setMusicVolume(0.20 + (0.80 * prog));
@@ -64,7 +64,7 @@ export default function App() {
         }
       }
 
-      // Continuous Vibe Loop of last 5 seconds
+      // Continuous Vibe Loop of last 5 seconds (NEVER RESTARTS ON SONG CHANGE)
       if (t >= duration - 0.3) {
         const vibeLoopStart = Math.max(8.0, duration - 5.0);
         video.currentTime = vibeLoopStart;
