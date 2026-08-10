@@ -692,7 +692,7 @@
       const [hasInteracted, setHasInteracted] = useState(false);
       const videoRef = useRef(null);
 
-      // Try autoplaying muted video immediately on mount so background video works out of the box
+      // Muted autoplay on mount
       useEffect(() => {
         const video = videoRef.current;
         if (video) {
@@ -750,11 +750,11 @@
       return (
         <main 
           onClick={() => { if (!hasInteracted) startRideWithAudio(); }} 
-          className="relative flex min-h-dvh flex-1 flex-col items-center justify-between overflow-hidden bg-slate-950 cursor-pointer select-none"
+          className="relative flex min-h-dvh flex-1 flex-col items-center justify-between overflow-hidden cursor-pointer select-none"
         >
           
-          {/* Ambient Video Background */}
-          <div className="fixed inset-0 -z-10 bg-black overflow-hidden">
+          {/* Background Fullscreen Video - Layer 0 */}
+          <div className="fixed inset-0 z-0 bg-slate-950 overflow-hidden">
             <video
               ref={videoRef}
               src="musics.mp4"
@@ -762,10 +762,11 @@
               playsInline
               muted
               loop
-              className="h-full w-full object-cover opacity-90 transition-opacity duration-700"
+              className="h-full w-full object-cover transition-opacity duration-700"
             />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-slate-950/70 via-transparent to-slate-950/90" />
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(2,6,23,0.65)_100%)]" />
+            {/* Subtle Gradient Overlays for readable text */}
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-slate-950/60 via-transparent to-slate-950/80" />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(2,6,23,0.5)_100%)]" />
           </div>
 
           <ISTClock />

@@ -63,11 +63,11 @@ export default function App() {
   return (
     <main 
       onClick={() => { if (!hasInteracted) startRideWithAudio(); }}
-      className="relative flex min-h-dvh flex-1 flex-col items-center justify-between overflow-hidden bg-slate-950 cursor-pointer select-none"
+      className="relative flex min-h-dvh flex-1 flex-col items-center justify-between overflow-hidden cursor-pointer select-none"
     >
       
-      {/* Background Fullscreen Video */}
-      <div className="fixed inset-0 -z-10 bg-black overflow-hidden">
+      {/* Background Fullscreen Video - Layer 0 */}
+      <div className="fixed inset-0 z-0 bg-slate-950 overflow-hidden">
         <video
           ref={videoRef}
           src="musics.mp4"
@@ -75,12 +75,12 @@ export default function App() {
           playsInline
           muted
           loop
-          className="h-full w-full object-cover opacity-90 transition-opacity duration-700"
+          className="h-full w-full object-cover transition-opacity duration-700"
         />
         
-        {/* Dark Vignette & Atmospheric Overlay */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-slate-950/70 via-transparent to-slate-950/90" />
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(2,6,23,0.65)_100%)]" />
+        {/* Subtle Dark Vignette Overlays */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-slate-950/60 via-transparent to-slate-950/80" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(2,6,23,0.5)_100%)]" />
       </div>
 
       {/* Top Bar Navigation & Widgets */}
