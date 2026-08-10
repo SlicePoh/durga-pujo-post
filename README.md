@@ -8,32 +8,29 @@
 
 ## 🤖 BUILD YOUR OWN WEBSITE (No Coding Knowledge Required!)
 
-Want to create your own personalized web experience (e.g. *90s Cybercafe*, *Lo-Fi Rain Drive*, *Retro Anime Train*, *Gaming Den*)? **You don't need to know how to code!** You can use AI to build it for you in 2 minutes.
+Want to create your own personalized web experience (e.g. *90s Cybercafe*, *Lo-Fi Rain Drive*, *Retro Anime Train*, *Gaming Den*)? **You don't need to know how to code!**
+
+Here is how you use **Gemini/ChatGPT** for media ideas and **AI Coding Agents** to write the code:
 
 ---
 
-### ✏️ BLOCK 1: YOUR CUSTOM IDEA (Fill this in!)
-Before using the AI prompt in [`AGENT_INSTRUCTIONS.md`](./AGENT_INSTRUCTIONS.md), decide on your idea:
+### 🎨 BLOCK 1: USE GEMINI OR CHATGPT FOR MEDIA & PLAYLIST IDEAS
+Ask **Google Gemini** or **ChatGPT** to generate your background image/video ideas and song list:
 
-1. **Theme Name**: (e.g. *90s Cybercafe in Delhi* / *Tokyo Rain Drive*)
-2. **Background Video**: (e.g. *Rainy window view* / *Retro driving loop*)
-3. **Playlist**: (e.g. *Your top 5 favorite songs*)
-4. **Button Text**: (e.g. *Tap to Enter 🎮* / *Start Ride 🌧️*)
+> 🗣️ **Ask Gemini / ChatGPT**:  
+> *"Give me 5 nostalgic songs and an AI image/video prompt for a 90s cybercafe theme."*
+
+Fill in your ideas into **Block 1** inside [`AGENT_INSTRUCTIONS.md`](./AGENT_INSTRUCTIONS.md).
 
 ---
 
-### 📢 BLOCK 2: HOW TO GENERATE IT USING GEMINI / CHATGPT / CURSOR
+### 💻 BLOCK 2: USE AN AI CODING AGENT TO CODE & BUILD IT
+To build the actual website without typing code:
 
-Follow these 4 simple steps:
-
-1. **Open the Prompt File**: Click on [`AGENT_INSTRUCTIONS.md`](./AGENT_INSTRUCTIONS.md).
-2. **Copy the Text**: Fill in your idea into **Block 1** and copy the prompt text.
-3. **Paste into Gemini or ChatGPT**:
-   - Go to [Google Gemini](https://gemini.google.com) or [ChatGPT](https://chatgpt.com) or your AI Editor (Antigravity / Cursor).
-   - Paste the prompt and press **Enter**.
-4. **Publish Free**:
-   - Ask Gemini or ChatGPT: *"How do I publish this live on Vercel for free?"*
-   - It will guide you step-by-step to get your live website link!
+1. Open [`AGENT_INSTRUCTIONS.md`](./AGENT_INSTRUCTIONS.md).
+2. Copy the **Master AI Prompt** (with your filled-in ideas).
+3. Paste it into an **AI Coding Agent / Editor** (like **Antigravity**, **Cursor**, **Bolt.new**, **v0.dev**, or **Claude Code**).
+4. The AI Coding Agent will write all the code, set up the audio mixing, and give you a live shareable link!
 
 ---
 

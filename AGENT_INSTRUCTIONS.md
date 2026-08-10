@@ -1,21 +1,29 @@
 # 🚀 AI AGENT PROMPT: Build Your Own Interactive Audio-Visual Experience
 
-> 💡 **WELCOME! NO CODING OR GITHUB EXPERIENCE REQUIRED.**  
-> You can create your own personalized, interactive website (like a *90s Cybercafe*, *Lo-Fi Rain Drive*, *Retro Gaming Den*, or *Midnight Train*) in just 2 simple steps using Google Gemini, ChatGPT, Claude, Antigravity, or Cursor!
+> 💡 **NO CODING OR GITHUB EXPERIENCE REQUIRED!**  
+> Anyone can create their own personalized, interactive website (like a *90s Cybercafe*, *Lo-Fi Rain Drive*, *Retro Gaming Den*, or *Midnight Train*) using **Gemini / ChatGPT** for media ideas and an **AI Coding Agent** (Cursor / Antigravity / Bolt / v0 / Claude) to build the app!
 
 ---
 
-## ✏️ BLOCK 1: FILL IN YOUR CUSTOM IDEA HERE (Edit this before copying!)
+## 🎨 BLOCK 1: USE GEMINI / CHATGPT TO CREATE YOUR MEDIA & PLAYLIST IDEAS
 
-Replace the bracketed text `[...]` below with your own custom idea:
+If you don't know what background video or songs to use, ask **Google Gemini** or **ChatGPT**:
+
+> 🗣️ **Example Prompt to Ask Gemini / ChatGPT**:  
+> *"I am making an interactive nostalgic web experience for [insert your theme, e.g., 'a 90s Cybercafe in Delhi']. Please give me:*  
+> 1. *5 nostalgic song titles with artist names.*  
+> 2. *A prompt to generate a 10-second looping background image or video (using Midjourney/Runway/Sora).*  
+> 3. *A cool Indian/Hindi button text like 'Tap to Start' or 'Jaldi Karo!'."*
+
+### Fill in your custom idea below before copying the master prompt:
 
 ```text
 ========================================================================
 MY CUSTOM WEBSITE IDEA:
 - THEME NAME: [e.g. 90s Cybercafe / Rainy Night Drive / Retro Gaming Room]
 - DESCRIPTION / MOOD: [e.g. Warm nostalgic vibes of playing games in a 90s cafe]
-- BACKGROUND VIDEO: [e.g. Rainy window view / Retro car driving on highway]
-- MY FAVORITE PLAYLIST / SONGS: [e.g. 5-10 songs you want in the music player]
+- BACKGROUND VIDEO / IMAGE: [Paste your video/image URL or description generated from Gemini]
+- PLAYLIST / SONGS: [Paste your 5-10 songs generated from Gemini]
 - START BUTTON TEXT: [e.g. "Tap to Start 🎮" / "Jaldi Karo! 🚌" / "Drive Night 🌧️"]
 - COLOR ACCENTS: [e.g. Neon Cyberpunk Purple, Warm Sunset Amber, Emerald Green]
 ========================================================================
@@ -23,24 +31,21 @@ MY CUSTOM WEBSITE IDEA:
 
 ---
 
-## 📢 BLOCK 2: HOW TO USE THIS WITH GEMINI / CHATGPT / CURSOR (Step-by-Step Guide for Laymen)
+## 💻 BLOCK 2: HOW TO BUILD & CODE IT USING AN AI AGENT (Cursor / Antigravity / Bolt.new / v0)
 
-Follow these 4 super-simple steps to build your site without typing a single line of code yourself:
+To turn your idea into a working live website without typing code:
 
-1. **Step 1: Fill in Block 1 above** with your custom theme, songs, and video idea.
-2. **Step 2: Copy Everything** on this page (from `# TASK: Build an Interactive Audio-Visual Web Experience` to the end).
-3. **Step 3: Paste into Google Gemini or ChatGPT**:
-   - Go to [Google Gemini](https://gemini.google.com) or [ChatGPT](https://chatgpt.com) or open your AI Editor (Antigravity / Cursor).
-   - Paste the entire copied prompt and hit **Enter**.
-4. **Step 4: Let AI Build & Publish**:
-   - The AI will generate all the files for you.
-   - Ask the AI: *"How do I publish this live on Vercel for free?"* and it will give you a live link to share with your friends!
+1. **Step 1**: Fill in **Block 1** above with your idea and Gemini media prompts.
+2. **Step 2**: Copy the **Master AI Prompt** below.
+3. **Step 3**: Paste it into an **AI Coding Editor / Agent**:
+   - Use **Antigravity**, **Cursor**, **Bolt.new**, **v0.dev**, or **Claude Code**.
+4. **Step 4**: Press **Enter**. The AI Coding Agent will assemble the website, hook up your video/audio, and give you a live shareable link!
 
 ---
 
 ---
 
-# 🤖 MASTER AI PROMPT (PASTE EVERYTHING BELOW INTO GEMINI / CHATGPT / AI AGENT)
+# 🤖 MASTER AI PROMPT (PASTE EVERYTHING BELOW INTO YOUR AI CODING AGENT)
 
 ```markdown
 # TASK: Build an Interactive Audio-Visual Web Experience
