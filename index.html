@@ -281,7 +281,7 @@
       );
     }
 
-    // --- Playlist Drawer Modal ---
+    // --- Playlist Drawer Modal with Pinned Track Badge ---
     function PlaylistDrawer({ isOpen, onClose, currentTrackIndex, onSelectTrack, onCustomYoutubeUrl }) {
       const [searchTerm, setSearchTerm] = useState('');
       const [customInput, setCustomInput] = useState('');
@@ -309,7 +309,12 @@
             
             <div className="flex items-center justify-between pb-3 border-b border-white/10">
               <div>
-                <h2 className="text-lg font-bold text-white tracking-wide">OmniVan Playlist</h2>
+                <h2 className="text-lg font-bold text-white tracking-wide flex items-center gap-2">
+                  <span>OmniVan Playlist</span>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/30 border border-amber-400/40 text-amber-200">
+                    📌 Pinned Track Queue
+                  </span>
+                </h2>
                 <p className="text-xs text-white/60">2008–2012 school commute bangers</p>
               </div>
               <button onClick={onClose} className="p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition">
@@ -382,26 +387,33 @@
                 <div className="flex-1 overflow-y-auto space-y-2 pr-1">
                   {filtered.map((track) => {
                     const origIndex = OMNI_PLAYLIST.findIndex(t => t.id === track.id);
-                    const isPlaying = origIndex === currentTrackIndex;
+                    const isPinned = origIndex === currentTrackIndex;
 
                     return (
                       <div 
                         key={track.id}
                         onClick={() => { onSelectTrack(origIndex); onClose(); }}
                         className={`group flex items-center gap-3.5 p-2.5 rounded-2xl cursor-pointer transition-all ${
-                          isPlaying ? 'bg-white/15 border border-white/30 shadow-md' : 'bg-white/5 border border-white/10 hover:bg-white/10'
+                          isPinned ? 'bg-amber-500/20 border border-amber-400/50 shadow-md ring-1 ring-amber-400/30' : 'bg-white/5 border border-white/10 hover:bg-white/10'
                         }`}
                       >
                         <img src={track.cover} alt={track.title} className="w-12 h-12 rounded-xl object-cover shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <p className={`text-sm font-semibold truncate ${isPlaying ? 'text-amber-300' : 'text-white'}`}>
-                            {track.title}
+                          <p className={`text-sm font-semibold truncate flex items-center gap-2 ${isPinned ? 'text-amber-300' : 'text-white'}`}>
+                            <span>{track.title}</span>
+                            {isPinned && (
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-400 text-black font-bold uppercase tracking-wider">
+                                📌 Pinned
+                              </span>
+                            )}
                           </p>
                           <p className="text-xs text-white/60 truncate">
                             {track.artist} • <span className="text-white/80">{track.movie}</span>
                           </p>
                         </div>
-                        <span className="text-xs px-2.5 py-1 rounded-full bg-white/10 text-white/90">Play</span>
+                        <span className={`text-xs px-2.5 py-1 rounded-full ${isPinned ? 'bg-amber-400 text-black font-bold' : 'bg-white/10 text-white/90'}`}>
+                          {isPinned ? 'Playing' : 'Pin & Play'}
+                        </span>
                       </div>
                     );
                   })}
@@ -467,7 +479,6 @@
               },
               onError: (e) => {
                 console.warn("YouTube player error (unembeddable or removed):", e.data);
-                // If YouTube blocks playback (error 101/150/100/2), automatically skip to next track!
                 setTimeout(() => {
                   onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length);
                 }, 400);
@@ -607,13 +618,23 @@
 
     // --- Main App Component ---
     function App() {
-      const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+      // Pin active track in localStorage
+      const [currentTrackIndex, setCurrentTrackIndex] = useState(() => {
+        const saved = localStorage.getItem('omni_pinned_track_index');
+        return saved !== null ? parseInt(saved, 10) : 0;
+      });
+
       const [isPlaylistOpen, setIsPlaylistOpen] = useState(false);
       const [customYoutubeId, setCustomYoutubeId] = useState(null);
 
       const [musicVolume, setMusicVolume] = useState(0.0);
       const [introFinished, setIntroFinished] = useState(false);
       const videoRef = useRef(null);
+
+      const handleSetTrack = (idx) => {
+        setCurrentTrackIndex(idx);
+        localStorage.setItem('omni_pinned_track_index', idx);
+      };
 
       // Instant Autoplay Muted Video on Mount
       useEffect(() => {
@@ -750,7 +771,7 @@
             {/* Bottom Music Player Pill */}
             <AudioPlayer
               currentTrackIndex={currentTrackIndex}
-              onTrackChange={setCurrentTrackIndex}
+              onTrackChange={handleSetTrack}
               onOpenPlaylist={() => setIsPlaylistOpen(true)}
               musicVolume={musicVolume}
               customTrackId={customYoutubeId}
@@ -762,7 +783,7 @@
             isOpen={isPlaylistOpen}
             onClose={() => setIsPlaylistOpen(false)}
             currentTrackIndex={currentTrackIndex}
-            onSelectTrack={(idx) => { setCustomYoutubeId(null); setCurrentTrackIndex(idx); }}
+            onSelectTrack={(idx) => { setCustomYoutubeId(null); handleSetTrack(idx); }}
             onCustomYoutubeUrl={handleCustomYoutubeUrl}
           />
 
