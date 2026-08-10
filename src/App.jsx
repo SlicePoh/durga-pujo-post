@@ -99,8 +99,8 @@ export default function App() {
           muted={!hasStarted}
           className="h-full w-full object-cover"
         />
-        {/* Subtle Vignette Layer */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70" />
+        {/* Subtle Gradient Vignette Overlay */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/60" />
       </div>
 
       {/* Nostalgic Emotional Entrance Overlay */}
@@ -140,11 +140,16 @@ export default function App() {
         </div>
       )}
 
-      {/* Top Header Controls Area */}
-      <header className="relative z-20 w-full px-4 pt-3 sm:pt-5 flex flex-wrap items-center justify-between gap-2 max-w-7xl mx-auto">
+      {/* Top Header Controls Bar (Contains clean 'ओम्नी वैन' title at top) */}
+      <header className="relative z-20 w-full px-4 pt-3 sm:pt-5 flex items-center justify-between gap-2 max-w-7xl mx-auto">
         <div className="flex items-center gap-2">
           <ISTClock />
           <LivePassengersCounter />
+        </div>
+
+        {/* Clean Top Title */}
+        <div className="hidden md:flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/30 backdrop-blur-md border border-white/15">
+          <span className="text-xl font-extrabold text-white font-hindi tracking-wide">ओम्नी वैन 🚌</span>
         </div>
 
         <div className="flex items-center gap-1.5 sm:gap-2">
@@ -164,21 +169,14 @@ export default function App() {
             rel="noreferrer" 
             className="group/pill flex items-center gap-1.5 rounded-full text-xs sm:text-sm font-medium text-white px-3 py-1.5 bg-black/40 backdrop-blur-md border border-white/20 shadow-md transition hover:bg-white/20 active:scale-95"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="white" className="shrink-0"><path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0zm0 19.104c-3.924 0-7.104-3.18-7.104-7.104S8.076 4.896 12 4.896s7.104 3.18 7.104 7.104-3.18 7.104-7.104 7.104zm0-13.332c-3.432 0-6.228 2.796-6.228 6.228S8.568 18.228 12 18.228s6.228-2.796 6.228-6.228S15.432 5.772 12 5.772zM9.684 15.54V8.46L15.816 12l-6.132 3.54z"></path></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white" className="shrink-0"><path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0zm0 19.104c-3.924 0-7.104-3.18-7.104-7.104S8.076 4.896 12 4.896s7.104 3.18 7.104 7.104-3.18 7.104-7.104-7.104zm0-13.332c-3.432 0-6.228 2.796-6.228 6.228S8.568 18.228 12 18.228s6.228-2.796 6.228-6.228S15.432 5.772 12 5.772zM9.684 15.54V8.46L15.816 12l-6.132 3.54z"></path></svg>
             <span className="hidden sm:inline">YT Music</span>
           </a>
         </div>
       </header>
 
-      {/* Central Hero Branding */}
-      <div className="relative z-20 flex flex-col items-center px-4 text-center my-auto">
-        <h1 className="text-6xl sm:text-8xl md:text-9xl font-extrabold tracking-tight text-white drop-shadow-[0_4px_35px_rgba(0,0,0,0.95)] font-hindi">
-          ओम्नी वैन
-        </h1>
-        <p className="mt-2 text-xs sm:text-sm font-hindi text-amber-300/90 tracking-wider font-medium drop-shadow-md">
-          पीछे वाली सीट की यादें
-        </p>
-      </div>
+      {/* Completely Clean & Unobstructed Center Viewport */}
+      <div className="flex-1 pointer-events-none" />
 
       {/* Bottom Deck Wrapper */}
       <footer className="relative z-20 flex flex-col items-center gap-2.5 px-3 pb-4 sm:pb-6 w-full max-w-xl mx-auto">
