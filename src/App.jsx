@@ -4,6 +4,7 @@ import LivePassengersCounter from './components/LivePassengersCounter';
 import AudioPlayer from './components/AudioPlayer';
 import PlaylistDrawer from './components/PlaylistDrawer';
 import { SPOTIFY_PLAYLIST_URL, YOUTUBE_MUSIC_PLAYLIST_URL, OMNI_PLAYLIST } from './data/playlist';
+import { Analytics } from '@vercel/analytics/react';
 
 export default function App() {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(() => {
@@ -219,6 +220,7 @@ export default function App() {
         onCustomYoutubeUrl={handleCustomYoutubeUrl}
       />
 
+      <Analytics />
     </main>
   );
 }
