@@ -16,10 +16,10 @@ const AudioPlayer = forwardRef(({
   musicVolume = 0.20, 
   customTrackId = null 
 }, ref) => {
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState({ current: 0, duration: 0 });
 
-  // ONE SINGLE STREAMING AUDIO LINE FOR THE ENTIRE APP
+  // ONE SINGLE UNIFIED AUDIO ELEMENT
   const audioRef = useRef(null);
 
   const activeTrack = customTrackId 
@@ -33,31 +33,17 @@ const AudioPlayer = forwardRef(({
     : OMNI_PLAYLIST[currentTrackIndex] || OMNI_PLAYLIST[0];
 
   useImperativeHandle(ref, () => ({
-    playFromStart: () => {
+    startPlayback: () => {
       const aud = audioRef.current;
       if (aud) {
         aud.currentTime = 0;
         aud.volume = Math.max(0, Math.min(1, musicVolume));
-        const playPromise = aud.play();
-        if (playPromise !== undefined) {
-          playPromise.then(() => setIsPlaying(true)).catch(err => console.log("Audio play error:", err));
-        }
+        aud.play().then(() => setIsPlaying(true)).catch(err => console.log("Audio start error:", err));
       }
     }
   }));
 
-  // Auto-start single audio line on mount
-  useEffect(() => {
-    const aud = audioRef.current;
-    if (aud) {
-      aud.volume = Math.max(0, Math.min(1, musicVolume));
-      aud.play().then(() => setIsPlaying(true)).catch(e => {
-        console.log("Autoplay notice:", e);
-      });
-    }
-  }, []);
-
-  // Track change on the single audio line
+  // Handle track changes cleanly on the single audio line
   useEffect(() => {
     const aud = audioRef.current;
     if (!aud) return;
@@ -65,7 +51,10 @@ const AudioPlayer = forwardRef(({
     aud.src = activeTrack.audioUrl;
     aud.currentTime = 0;
     aud.volume = Math.max(0, Math.min(1, musicVolume));
-    aud.play().then(() => setIsPlaying(true)).catch(e => console.log("Track play notice:", e));
+    
+    if (isPlaying) {
+      aud.play().then(() => setIsPlaying(true)).catch(e => console.log("Track play notice:", e));
+    }
   }, [currentTrackIndex]);
 
   // Synchronize Volume Smoothly on the single audio line
@@ -112,11 +101,10 @@ const AudioPlayer = forwardRef(({
 
   return (
     <div className="w-full max-w-xl mx-auto z-30">
-      {/* THE SINGLE UNIFIED AUDIO ELEMENT */}
+      {/* SINGLE STREAMING AUDIO LINE */}
       <audio 
         ref={audioRef} 
         src={activeTrack.audioUrl} 
-        autoPlay
         preload="auto"
         onEnded={() => {
           setIsPlaying(false);

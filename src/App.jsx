@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ISTClock from './components/ISTClock';
 import LivePassengersCounter from './components/LivePassengersCounter';
 import AudioPlayer from './components/AudioPlayer';
@@ -11,6 +11,7 @@ export default function App() {
     return saved !== null ? parseInt(saved, 10) : 0;
   });
 
+  const [hasStarted, setHasStarted] = useState(false);
   const [isPlaylistOpen, setIsPlaylistOpen] = useState(false);
   const [customYoutubeId, setCustomYoutubeId] = useState(null);
 
@@ -20,29 +21,32 @@ export default function App() {
   const videoRef = useRef(null);
   const audioPlayerRef = useRef(null);
 
-  // Changing track MUST NOT restart the video! Video stays in last 4-5s loop!
+  // Changing tracks MUST NOT restart the background video! Video stays in last 4s loop!
   const handleSetTrack = (idx) => {
     setCurrentTrackIndex(idx);
     localStorage.setItem('omni_pinned_track_index', idx);
-    setIntroFinished(true); // Ensures background video continues its 4-5s vibe loop without restarting
+    setIntroFinished(true); // Locks video in continuous 4s vibe loop
   };
 
-  // Direct Automatic Video Playback on Mount
-  useEffect(() => {
+  // Ultra-Seamless Entrance Trigger
+  const startCommuteExperience = useCallback(() => {
     const video = videoRef.current;
+    setHasStarted(true);
+
     if (video) {
       video.muted = false;
-      video.volume = 1.0;
+      video.volume = 1.0; // 100% Video dialogue volume at 0.0s
       video.currentTime = 0;
-      video.play().catch(e => {
-        console.log("Unmuted autoplay notice, retrying...", e);
-        video.muted = true;
-        video.play();
-      });
+      video.play().catch(err => console.log("Video play notice:", err));
+    }
+
+    setMusicVolume(0.20); // 20% Music volume at 0.0s
+    if (audioPlayerRef.current && typeof audioPlayerRef.current.startPlayback === 'function') {
+      audioPlayerRef.current.startPlayback();
     }
   }, []);
 
-  // Video (100% -> 70%) & Aahun Aahun Music (20% -> 100%) Exact 8-Second Mixing Engine
+  // Video (100% -> 20%) & Aahun Aahun Music (20% -> 100%) Exact 8-Second Mixing Engine
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -51,11 +55,14 @@ export default function App() {
       const t = video.currentTime;
       const duration = video.duration || 15;
 
-      if (!introFinished) {
+      if (hasStarted && !introFinished) {
         if (t <= 8.0) {
-          const prog = t / 8.0;
-          video.volume = 1.0 - (0.30 * prog);
-          setMusicVolume(0.20 + (0.80 * prog));
+          // Exact User Mix Formula:
+          // Video Dialogue Audio: 100% (1.0) at 0s -> fades down to 20% (0.20) at 8s
+          // Music Audio (Aahun Aahun): 20% (0.20) at 0s -> fades up to 100% (1.0) at 8s
+          const prog = t / 8.0; // 0.0 to 1.0
+          video.volume = 1.0 - (0.80 * prog); // 1.0 -> 0.20
+          setMusicVolume(0.20 + (0.80 * prog)); // 0.20 -> 1.0
         } 
         else if (t > 8.0) {
           video.volume = 0.0;
@@ -64,16 +71,16 @@ export default function App() {
         }
       }
 
-      // Continuous Vibe Loop of last 5 seconds (NEVER RESTARTS ON SONG CHANGE)
+      // Continuous Vibe Loop of last 4 seconds (NEVER RESTARTS ON SONG CHANGE)
       if (t >= duration - 0.3) {
-        const vibeLoopStart = Math.max(8.0, duration - 5.0);
+        const vibeLoopStart = Math.max(8.0, duration - 4.0);
         video.currentTime = vibeLoopStart;
       }
     };
 
     video.addEventListener('timeupdate', handleTimeUpdate);
     return () => video.removeEventListener('timeupdate', handleTimeUpdate);
-  }, [introFinished]);
+  }, [hasStarted, introFinished]);
 
   const handleCustomYoutubeUrl = (input) => {
     let videoId = input;
@@ -85,18 +92,47 @@ export default function App() {
   return (
     <main className="relative flex min-h-dvh flex-1 flex-col items-center justify-between overflow-hidden select-none">
       
-      {/* Background Full-Bleed Video - Layer 0 (Instant Unmuted AutoPlay) */}
+      {/* Background Full-Bleed Video - Layer 0 */}
       <div className="fixed inset-0 z-0 bg-black overflow-hidden">
         <video
           ref={videoRef}
           src="musics.mp4"
           autoPlay
           playsInline
+          muted={!hasStarted}
           className="h-full w-full object-cover"
         />
         {/* Subtle Vignette Layer */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/50" />
       </div>
+
+      {/* Zero-Friction Initial Entrance Overlay */}
+      {!hasStarted && (
+        <div 
+          onClick={startCommuteExperience}
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/60 backdrop-blur-xl cursor-pointer p-6 transition-all duration-500"
+        >
+          <div className="flex flex-col items-center max-w-md text-center">
+            <h1 className="text-7xl sm:text-8xl font-extrabold text-white mb-2 font-hindi drop-shadow-2xl">
+              ओम्नी वैन
+            </h1>
+            <p className="text-amber-300 font-medium text-sm tracking-wide mb-8">
+              2008–2012 Morning School Commute Experience
+            </p>
+            <button
+              type="button"
+              onClick={startCommuteExperience}
+              className="group relative inline-flex items-center gap-3 rounded-full py-4 px-8 text-base font-bold text-black bg-white shadow-[0_0_50px_rgba(245,158,11,0.5)] transition hover:scale-105 active:scale-95"
+            >
+              <span className="h-3 w-3 rounded-full bg-amber-500 animate-ping"></span>
+              <span>ENTER THE COMMUTE 🚌</span>
+            </button>
+            <p className="text-xs text-white/50 mt-4">
+              Tap anywhere to launch unmuted audio & video
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Top Bar Widgets */}
       <ISTClock />
