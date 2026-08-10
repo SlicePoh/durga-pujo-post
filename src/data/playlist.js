@@ -45,6 +45,24 @@ export const OMNI_PLAYLIST = [
     cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=600&auto=format&fit=crop"
   },
   {
+    id: "emptiness",
+    youtubeId: "Y-J8a46yL6c",
+    audioUrl: "/audio/tu_jaane_na.mp3",
+    title: "Emptiness (Tune Mere Jaana)",
+    artist: "Gajendra Verma",
+    movie: "Indie Pop Nostalgia (2011)",
+    cover: "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=600&auto=format&fit=crop"
+  },
+  {
+    id: "baby-bieber",
+    youtubeId: "kffacxfA7G4",
+    audioUrl: "/audio/give_me_some_sunshine.mp3",
+    title: "Baby",
+    artist: "Justin Bieber ft. Ludacris",
+    movie: "My World 2.0 (2010)",
+    cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=600&auto=format&fit=crop"
+  },
+  {
     id: "masakali",
     youtubeId: "e-k76oWfUCo",
     audioUrl: "/audio/masakali.mp3",
