@@ -14,10 +14,9 @@ export default function App() {
   const [isPlaylistOpen, setIsPlaylistOpen] = useState(false);
   const [customYoutubeId, setCustomYoutubeId] = useState(null);
 
-  const [musicVolume, setMusicVolume] = useState(0.0);
+  const [musicVolume, setMusicVolume] = useState(0.20); // Starts at 20%
   const [introFinished, setIntroFinished] = useState(false);
   const [isVideoMuted, setIsVideoMuted] = useState(true);
-  const [hasTriggeredMusic, setHasTriggeredMusic] = useState(false);
 
   const videoRef = useRef(null);
   const audioPlayerRef = useRef(null);
@@ -27,17 +26,46 @@ export default function App() {
     localStorage.setItem('omni_pinned_track_index', idx);
   };
 
-  // Muted Autoplay on Mount
-  useEffect(() => {
+  // Auto-unlock audio and video on ANY initial user interaction (click, scroll, keydown, pointer)
+  const triggerUnmuteAndStartVoice = useCallback(() => {
     const video = videoRef.current;
     if (video) {
-      video.muted = true;
-      setIsVideoMuted(true);
-      video.play().catch(err => console.log("Muted autoplay notice:", err));
+      video.muted = false;
+      setIsVideoMuted(false);
+      setIntroFinished(false);
+      video.currentTime = 0;
+      video.volume = 1.0; // 100% Video Volume at 0.0s
+      setMusicVolume(0.20); // 20% Music Volume at 0.0s
+
+      // Unlock Dual HTML5 Audio elements
+      if (audioPlayerRef.current && typeof audioPlayerRef.current.playFromStart === 'function') {
+        audioPlayerRef.current.playFromStart();
+      }
+
+      video.play().catch(e => console.log('Unmute play:', e));
     }
   }, []);
 
-  // Equal-Power Cinematic Audio Crossfade Engine
+  // Auto-listen for first touch/interaction anywhere on window to auto-start!
+  useEffect(() => {
+    const handleFirstInteraction = () => {
+      if (isVideoMuted) {
+        triggerUnmuteAndStartVoice();
+      }
+    };
+
+    window.addEventListener('pointerdown', handleFirstInteraction, { once: true });
+    window.addEventListener('keydown', handleFirstInteraction, { once: true });
+    window.addEventListener('touchstart', handleFirstInteraction, { once: true });
+
+    return () => {
+      window.removeEventListener('pointerdown', handleFirstInteraction);
+      window.removeEventListener('keydown', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+    };
+  }, [isVideoMuted, triggerUnmuteAndStartVoice]);
+
+  // Video (100% -> 70%) & Aahun Aahun Music (20% -> 100%) Exact 8-Second Mixing Engine
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -46,29 +74,18 @@ export default function App() {
       const t = video.currentTime;
       const duration = video.duration || 15;
 
-      // Only advance intro voice crossfade if video is UNMUTED
       if (!video.muted && !introFinished) {
-        if (t < 5.5) {
-          video.volume = 1.0;
-          setMusicVolume(0.0);
+        if (t <= 8.0) {
+          // Exact User Formula:
+          // Video Audio: 100% (1.0) at 0s -> fades down to 70% (0.70) at 8s
+          // Music Audio: 20% (0.20) at 0s -> fades up to 100% (1.0) at 8s
+          const prog = t / 8.0; // 0.0 to 1.0
+          video.volume = 1.0 - (0.30 * prog); // 1.0 -> 0.70
+          setMusicVolume(0.20 + (0.80 * prog)); // 0.20 -> 1.0
         } 
-        else if (t >= 5.5 && t <= 8.5) {
-          // Equal-Power Cosine / Sine Crossfade Curve (Super smooth audio blending!)
-          const prog = (t - 5.5) / 3.0; // 0.0 -> 1.0
-          video.volume = Math.max(0, Math.cos(prog * (Math.PI / 2)));
-          setMusicVolume(Math.sin(prog * (Math.PI / 2)) * 0.85);
-
-          // START AAHUN AAHUN MUSIC AT SECOND 5.5 (PRE-TRIGGER FOR 0ms LAG)
-          if (!hasTriggeredMusic) {
-            setHasTriggeredMusic(true);
-            if (audioPlayerRef.current && typeof audioPlayerRef.current.playFromStart === 'function') {
-              audioPlayerRef.current.playFromStart();
-            }
-          }
-        } 
-        else if (t > 8.5) {
+        else if (t > 8.0) {
           video.volume = 0.0;
-          setMusicVolume(0.85);
+          setMusicVolume(1.0);
           setIntroFinished(true);
         }
       }
@@ -82,28 +99,7 @@ export default function App() {
 
     video.addEventListener('timeupdate', handleTimeUpdate);
     return () => video.removeEventListener('timeupdate', handleTimeUpdate);
-  }, [introFinished, hasTriggeredMusic]);
-
-  // Unmute Video & Start Automatic 8s Van Arrival Experience
-  const triggerUnmuteAndStartVoice = useCallback(() => {
-    const video = videoRef.current;
-    if (video) {
-      video.muted = false;
-      setIsVideoMuted(false);
-      setIntroFinished(false);
-      setHasTriggeredMusic(false);
-      video.currentTime = 0;
-      video.volume = 1.0;
-      setMusicVolume(0.0);
-
-      // Unlock audio element in user interaction
-      if (audioPlayerRef.current && typeof audioPlayerRef.current.unlockAudio === 'function') {
-        audioPlayerRef.current.unlockAudio();
-      }
-
-      video.play().catch(e => console.log('Unmute play:', e));
-    }
-  }, []);
+  }, [introFinished]);
 
   const handleCustomYoutubeUrl = (input) => {
     let videoId = input;
@@ -114,9 +110,7 @@ export default function App() {
 
   return (
     <main 
-      onClick={() => {
-        if (isVideoMuted) triggerUnmuteAndStartVoice();
-      }}
+      onClick={triggerUnmuteAndStartVoice}
       className="relative flex min-h-dvh flex-1 flex-col items-center justify-between overflow-hidden select-none cursor-pointer"
     >
       
@@ -188,7 +182,7 @@ export default function App() {
         {/* Unmute Prompt Banner if Video is Muted */}
         {isVideoMuted && (
           <p className="text-[11px] font-medium text-amber-300/90 tracking-wide animate-pulse drop-shadow">
-            🔊 Tap anywhere or click 'Jaldi Karo!' to hear Van Arrival Dialogue
+            🔊 Tap anywhere or move cursor to enter OmniVan
           </p>
         )}
 
