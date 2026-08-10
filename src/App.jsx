@@ -47,7 +47,7 @@ export default function App() {
         setIntroFinished(true);
       }
 
-      // Vibe Loop: Continuous loop of last 5 seconds
+      // Continuous Vibe Loop of last 5 seconds
       if (t >= duration - 0.3) {
         const vibeLoopStart = Math.max(8.0, duration - 5.0);
         video.currentTime = vibeLoopStart;
@@ -58,16 +58,16 @@ export default function App() {
     return () => video.removeEventListener('timeupdate', handleTimeUpdate);
   }, [introFinished]);
 
-  const handleUserClick = () => {
+  // Trigger "Jaldi Karo!" Audio Experience
+  const startJaldiKaroAudio = () => {
     const video = videoRef.current;
-    if (video && video.muted) {
+    if (video) {
+      setIntroFinished(false);
       video.muted = false;
-      if (!introFinished) {
-        video.currentTime = 0;
-        video.volume = 1.0;
-        setMusicVolume(0.0);
-      }
-      video.play().catch(e => console.log('Unmute play:', e));
+      video.currentTime = 0;
+      video.volume = 1.0;
+      setMusicVolume(0.0);
+      video.play().catch(e => console.log('Jaldi Karo play:', e));
     }
   };
 
@@ -79,10 +79,7 @@ export default function App() {
   };
 
   return (
-    <main 
-      onClick={handleUserClick} 
-      className="relative flex min-h-dvh flex-1 flex-col items-center justify-between overflow-hidden cursor-pointer select-none"
-    >
+    <main className="relative flex min-h-dvh flex-1 flex-col items-center justify-between overflow-hidden select-none">
       
       {/* Background Full-Bleed Video - Layer 0 (Instant AutoPlay) */}
       <div className="fixed inset-0 z-0 bg-black overflow-hidden">
@@ -133,8 +130,20 @@ export default function App() {
         </h1>
       </div>
 
-      {/* Bottom Music Player Pill */}
-      <div className="mb-[8vh] flex w-full justify-center px-6 z-20">
+      {/* Bottom Deck Wrapper with "Jaldi Karo!" Button */}
+      <div className="mb-[8vh] flex flex-col items-center gap-3 z-20 px-6 w-full">
+        
+        {/* Minimal Glassmorphism "Jaldi Karo!" Button */}
+        <button
+          type="button"
+          onClick={startJaldiKaroAudio}
+          className="group/pill inline-flex items-center gap-2 rounded-full py-1.5 px-4 text-xs font-semibold text-white bg-white/10 backdrop-blur-xl border border-white/25 shadow-lg transition hover:bg-white/20 active:scale-95"
+        >
+          <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+          <span>Jaldi Karo! 🚌</span>
+        </button>
+
+        {/* Bottom Music Player Pill */}
         <AudioPlayer
           currentTrackIndex={currentTrackIndex}
           onTrackChange={setCurrentTrackIndex}
