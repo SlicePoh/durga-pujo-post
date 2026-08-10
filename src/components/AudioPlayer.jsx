@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, ListMusic, Disc, Sparkles } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, ListMusic, Disc } from 'lucide-react';
 import { OMNI_PLAYLIST } from '../data/playlist';
 
 let ytApiPromise = null;
@@ -20,7 +20,6 @@ export default function AudioPlayer({
 }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
   const [progress, setProgress] = useState({ current: 0, duration: 0 });
 
   const playerRef = useRef(null);
@@ -28,16 +27,14 @@ export default function AudioPlayer({
 
   const activeTrack = customTrackId 
     ? {
-        title: "Custom Track",
+        title: "Custom Stream",
         artist: "YouTube Stream",
         movie: "User Selected",
-        cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600&auto=format&fit=crop",
-        youtubeId: customTrackId,
-        tagline: "Playing your custom YouTube link"
+        cover: OMNI_PLAYLIST[0].cover,
+        youtubeId: customTrackId
       }
     : OMNI_PLAYLIST[currentTrackIndex] || OMNI_PLAYLIST[0];
 
-  // Initialize YouTube IFrame API
   useEffect(() => {
     let mounted = true;
 
@@ -86,6 +83,13 @@ export default function AudioPlayer({
               setIsPlaying(false);
               onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length);
             }
+          },
+          onError: (event) => {
+            console.warn("YouTube player error (unembeddable or removed video):", event.data);
+            // Auto skip restricted/unembeddable tracks
+            setTimeout(() => {
+              onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length);
+            }, 400);
           }
         }
       });
@@ -96,7 +100,6 @@ export default function AudioPlayer({
     };
   }, []);
 
-  // Update track when activeTrack changes
   useEffect(() => {
     if (playerRef.current && isReady && activeTrack.youtubeId) {
       playerRef.current.loadVideoById(activeTrack.youtubeId, 5);
@@ -104,15 +107,12 @@ export default function AudioPlayer({
     }
   }, [currentTrackIndex, customTrackId, isReady]);
 
-  // Dynamic Volume Control (including Crossfade)
   useEffect(() => {
     if (playerRef.current && typeof playerRef.current.setVolume === 'function') {
-      const targetVol = isMuted ? 0 : Math.round(musicVolume * 100);
-      playerRef.current.setVolume(targetVol);
+      playerRef.current.setVolume(Math.round(musicVolume * 100));
     }
-  }, [musicVolume, isMuted]);
+  }, [musicVolume]);
 
-  // Time & Progress Poller
   useEffect(() => {
     const timer = setInterval(() => {
       const player = playerRef.current;
@@ -151,116 +151,69 @@ export default function AudioPlayer({
 
   return (
     <div className="w-full max-w-xl mx-auto z-30">
-      {/* Hidden YouTube IFrame Container */}
       <div className="pointer-events-none absolute h-px w-px overflow-hidden opacity-0">
         <div ref={containerRef} />
       </div>
 
-      {/* Main Glassmorphic Cassette Deck */}
-      <div className="glass-panel rounded-full p-3 pr-6 flex items-center gap-4 border border-white/20 shadow-2xl transition-all hover:border-white/30">
-        
-        {/* Spinning Vinyl / Cassette Art */}
-        <div className="relative h-18 w-18 sm:h-20 sm:w-20 shrink-0">
-          <div 
-            className={`h-full w-full rounded-full overflow-hidden shadow-xl ring-2 ring-white/20 transition-all ${
-              isPlaying ? 'animate-spin-slow ring-amber-400/50' : 'opacity-90'
-            }`}
-          >
-            <img 
-              src={activeTrack.cover} 
-              alt={activeTrack.title} 
-              className="h-full w-full object-cover" 
-            />
+      <div className="group relative flex items-center gap-4 rounded-full p-3 pr-5 bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 shadow-[0_8px_40px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.25)]">
+        <div className="relative h-20 w-20 shrink-0">
+          <div className={`h-full w-full rounded-full overflow-hidden shadow-lg ring-1 ring-white/20 ${isPlaying ? 'animate-spin-slow' : 'opacity-90'}`}>
+            <img src={activeTrack.cover} alt={activeTrack.title} className="h-full w-full object-cover" />
           </div>
-          
-          {/* Cassette Spool Center Hole */}
-          <div className="pointer-events-none absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-950/80 ring-2 ring-white/50 flex items-center justify-center">
-            <div className="w-1 h-1 rounded-full bg-amber-400"></div>
-          </div>
+          <div className="pointer-events-none absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/70 ring-2 ring-white/40" />
         </div>
 
-        {/* Track Title & Progress Bar */}
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-[10px] font-mono text-amber-300 border border-amber-500/30">
-              2008-2012
-            </span>
-            <p className="truncate text-sm sm:text-base font-bold text-white drop-shadow-sm">
-              {activeTrack.title}
-            </p>
-          </div>
-          
-          <p className="truncate text-xs text-white/70 mt-0.5">
-            {activeTrack.artist} • <span className="text-amber-200/90 font-medium">{activeTrack.movie}</span>
-          </p>
+          <p className="truncate text-[15px] font-semibold text-white drop-shadow-sm">{activeTrack.title}</p>
+          <p className="truncate text-[13px] text-white/70">{activeTrack.artist}</p>
 
-          {/* Seek Bar */}
           <div className="mt-2">
-            <div 
-              onClick={handleSeek}
-              className="group/bar relative h-2 w-full cursor-pointer flex items-center"
-              role="slider"
-              aria-label="Seek track"
-            >
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/20 backdrop-blur-sm">
-                <div 
-                  className="h-full rounded-full bg-gradient-to-r from-amber-400 to-amber-200 transition-all duration-150"
-                  style={{ width: `${percent}%` }}
-                />
+            <div onClick={handleSeek} className="group/bar relative h-2 w-full cursor-pointer" role="slider" aria-label="Seek">
+              <div className="absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 overflow-hidden rounded-full bg-white/20">
+                <div className="h-full rounded-full bg-white/90" style={{ width: `${percent}%` }} />
               </div>
-              <div 
-                className="absolute h-3 w-3 -translate-x-1/2 rounded-full bg-amber-300 opacity-0 shadow-lg transition-opacity group-hover/bar:opacity-100 ring-2 ring-white"
-                style={{ left: `${percent}%` }}
-              />
+              <div className="absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white opacity-0 shadow transition-opacity group-hover/bar:opacity-100" style={{ left: `${percent}%` }} />
             </div>
-            
-            <div className="mt-1 flex items-center justify-between text-[11px] font-mono tabular-nums text-white/60">
-              <span>{formatTime(progress.current)}</span>
-              <span>{formatTime(progress.duration)}</span>
+            <div className="mt-1.5 text-left text-[11px] tabular-nums text-white/60">
+              {formatTime(progress.current)} / {formatTime(progress.duration)}
             </div>
           </div>
         </div>
 
-        {/* Controls */}
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex items-center gap-1">
           <button 
-            onClick={() => onTrackChange((currentTrackIndex - 1 + OMNI_PLAYLIST.length) % OMNI_PLAYLIST.length)}
+            type="button"
+            onClick={() => onTrackChange((currentTrackIndex - 1 + OMNI_PLAYLIST.length) % OMNI_PLAYLIST.length)} 
             className="grid h-9 w-9 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white active:scale-95"
-            title="Previous song"
           >
             <SkipBack className="w-4 h-4 fill-current" />
           </button>
 
           <button 
-            onClick={togglePlay}
-            disabled={!isReady}
-            className="grid h-11 w-11 place-items-center rounded-full bg-amber-400 text-slate-950 shadow-lg shadow-amber-500/20 transition hover:scale-105 active:scale-95 disabled:opacity-50"
-            title={isPlaying ? "Pause" : "Play"}
+            type="button"
+            onClick={togglePlay} 
+            disabled={!isReady} 
+            className="grid h-11 w-11 place-items-center rounded-full bg-white text-black shadow-lg transition hover:scale-105 active:scale-95 disabled:opacity-50"
           >
-            {isPlaying ? (
-              <Pause className="w-5 h-5 fill-current" />
-            ) : (
-              <Play className="w-5 h-5 fill-current ml-0.5" />
-            )}
+            {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current ml-0.5" />}
           </button>
 
           <button 
-            onClick={() => onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length)}
+            type="button"
+            onClick={() => onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length)} 
             className="grid h-9 w-9 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white active:scale-95"
-            title="Next song"
           >
             <SkipForward className="w-4 h-4 fill-current" />
           </button>
 
           <button 
-            onClick={onOpenPlaylist}
-            className="grid h-9 w-9 place-items-center rounded-full text-white/80 hover:text-white hover:bg-white/15 transition active:scale-95 ml-1"
-            title="Open 2008-2012 Playlist"
+            type="button"
+            onClick={onOpenPlaylist} 
+            className="grid h-9 w-9 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white active:scale-95 ml-1"
           >
             <ListMusic className="w-4 h-4" />
           </button>
         </div>
-
       </div>
     </div>
   );

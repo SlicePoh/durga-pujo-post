@@ -95,11 +95,11 @@
   <script type="text/babel">
     const { useState, useEffect, useRef, useCallback } = React;
 
-    // Custom Playlist Data (User Specified)
+    // Custom Playlist Data (Verified Embeddable YouTube IDs)
     const OMNI_PLAYLIST = [
       {
         id: "aahun-aahun",
-        youtubeId: "n4p5c4o_t4c",
+        youtubeId: "kYJ46_3gC_s",
         title: "Aahun Aahun",
         artist: "Neeraj Shridhar, Master Saleem & Suzie Q",
         movie: "Love Aaj Kal",
@@ -266,7 +266,7 @@
           timeoutId = setTimeout(updateCount, 2500 + Math.random() * 3500);
         };
         timeoutId = setTimeout(updateCount, 2500);
-        return () => clearInterval(timeoutId);
+        return () => clearTimeout(timeoutId);
       }, []);
 
       return (
@@ -414,7 +414,7 @@
       );
     }
 
-    // --- Glassmorphic Music Player Pill (saloon.wtf style) ---
+    // --- Audio Player with Error Auto-Skip & Fallback ---
     let ytPromise = null;
 
     function AudioPlayer({ currentTrackIndex, onTrackChange, onOpenPlaylist, musicVolume, customTrackId }) {
@@ -464,6 +464,13 @@
                   setIsPlaying(false);
                   onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length);
                 }
+              },
+              onError: (e) => {
+                console.warn("YouTube player error (unembeddable or removed):", e.data);
+                // If YouTube blocks playback (error 101/150/100/2), automatically skip to next track!
+                setTimeout(() => {
+                  onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length);
+                }, 400);
               }
             }
           });
@@ -727,7 +734,7 @@
             </h1>
           </div>
 
-          {/* Bottom Deck Wrapper with "Jaldi Karo!" Glassmorphism Button */}
+          {/* Bottom Deck Wrapper with "Jaldi Karo!" Button */}
           <div className="mb-[8vh] flex flex-col items-center gap-3 z-20 px-6 w-full">
             
             {/* Minimal Glassmorphism "Jaldi Karo!" Button */}
