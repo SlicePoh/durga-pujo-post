@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, ListMusic, Disc } from 'lucide-react';
 import { OMNI_PLAYLIST } from '../data/playlist';
 
@@ -11,13 +11,13 @@ function formatTime(seconds) {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
-export default function AudioPlayer({ 
+const AudioPlayer = forwardRef(({ 
   currentTrackIndex, 
   onTrackChange, 
   onOpenPlaylist, 
   musicVolume = 0.85, 
   customTrackId = null 
-}) {
+}, ref) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [progress, setProgress] = useState({ current: 0, duration: 0 });
@@ -34,6 +34,16 @@ export default function AudioPlayer({
         youtubeId: customTrackId
       }
     : OMNI_PLAYLIST[currentTrackIndex] || OMNI_PLAYLIST[0];
+
+  useImperativeHandle(ref, () => ({
+    playFromStart: () => {
+      if (playerRef.current && isReady) {
+        playerRef.current.seekTo(0, true);
+        playerRef.current.playVideo();
+        setIsPlaying(true);
+      }
+    }
+  }));
 
   useEffect(() => {
     let mounted = true;
@@ -67,7 +77,7 @@ export default function AudioPlayer({
           rel: 0,
           modestbranding: 1,
           autoplay: 0,
-          start: 5
+          start: 0
         },
         events: {
           onReady: (event) => {
@@ -85,8 +95,7 @@ export default function AudioPlayer({
             }
           },
           onError: (event) => {
-            console.warn("YouTube player error (unembeddable or removed video):", event.data);
-            // Auto skip restricted/unembeddable tracks
+            console.warn("YouTube player error:", event.data);
             setTimeout(() => {
               onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length);
             }, 400);
@@ -102,7 +111,7 @@ export default function AudioPlayer({
 
   useEffect(() => {
     if (playerRef.current && isReady && activeTrack.youtubeId) {
-      playerRef.current.loadVideoById(activeTrack.youtubeId, 5);
+      playerRef.current.loadVideoById(activeTrack.youtubeId, 0);
       setIsPlaying(true);
     }
   }, [currentTrackIndex, customTrackId, isReady]);
@@ -217,4 +226,6 @@ export default function AudioPlayer({
       </div>
     </div>
   );
-}
+});
+
+export default AudioPlayer;
