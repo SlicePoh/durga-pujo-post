@@ -57,9 +57,6 @@ export default function App() {
 
       if (hasStarted && !introFinished) {
         if (t <= 8.0) {
-          // Exact User Mix Formula:
-          // Video Dialogue Audio: 100% (1.0) at 0s -> fades down to 20% (0.20) at 8s
-          // Music Audio (Aahun Aahun): 20% (0.20) at 0s -> fades up to 100% (1.0) at 8s
           const prog = t / 8.0; // 0.0 to 1.0
           video.volume = 1.0 - (0.80 * prog); // 1.0 -> 0.20
           setMusicVolume(0.20 + (0.80 * prog)); // 0.20 -> 1.0
@@ -90,10 +87,10 @@ export default function App() {
   };
 
   return (
-    <main className="relative flex min-h-dvh flex-1 flex-col items-center justify-between overflow-hidden select-none">
+    <main className="relative flex h-[100dvh] w-full flex-col justify-between overflow-hidden select-none touch-manipulation">
       
       {/* Background Full-Bleed Video - Layer 0 */}
-      <div className="fixed inset-0 z-0 bg-black overflow-hidden">
+      <div className="fixed inset-0 z-0 bg-black overflow-hidden pointer-events-none">
         <video
           ref={videoRef}
           src="musics.mp4"
@@ -103,74 +100,88 @@ export default function App() {
           className="h-full w-full object-cover"
         />
         {/* Subtle Vignette Layer */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/50" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70" />
       </div>
 
-      {/* Zero-Friction Initial Entrance Overlay */}
+      {/* Nostalgic Emotional Entrance Overlay */}
       {!hasStarted && (
         <div 
           onClick={startCommuteExperience}
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/60 backdrop-blur-xl cursor-pointer p-6 transition-all duration-500"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/75 backdrop-blur-2xl cursor-pointer p-6 transition-all duration-500"
         >
-          <div className="flex flex-col items-center max-w-md text-center">
-            <h1 className="text-7xl sm:text-8xl font-extrabold text-white mb-2 font-hindi drop-shadow-2xl">
+          <div className="flex flex-col items-center max-w-lg text-center px-4">
+            
+            {/* Van Icon Badge */}
+            <div className="mb-4 inline-flex items-center justify-center h-16 w-16 rounded-full bg-white/10 border border-white/20 shadow-2xl backdrop-blur-md animate-bounce">
+              <span className="text-3xl">🚌</span>
+            </div>
+
+            <h1 className="text-6xl sm:text-8xl font-extrabold text-white mb-3 font-hindi drop-shadow-[0_4px_30px_rgba(0,0,0,0.9)] tracking-tight">
               ओम्नी वैन
             </h1>
-            <p className="text-amber-300 font-medium text-sm tracking-wide mb-8">
-              2008–2012 Morning School Commute Experience
+
+            <p className="text-amber-300 font-hindi font-medium text-lg sm:text-2xl tracking-wide mb-8 leading-snug drop-shadow-md">
+              "अरे बस्ता संभालो... वैन बाहर हॉर्न दे रही है!"
             </p>
+
             <button
               type="button"
               onClick={startCommuteExperience}
-              className="group relative inline-flex items-center gap-3 rounded-full py-4 px-8 text-base font-bold text-black bg-white shadow-[0_0_50px_rgba(245,158,11,0.5)] transition hover:scale-105 active:scale-95"
+              className="group relative inline-flex items-center gap-3 rounded-full py-4 px-9 text-lg font-extrabold text-black bg-amber-400 hover:bg-amber-300 shadow-[0_0_50px_rgba(245,158,11,0.6)] transition-all hover:scale-105 active:scale-95"
             >
-              <span className="h-3 w-3 rounded-full bg-amber-500 animate-ping"></span>
-              <span>ENTER THE COMMUTE 🚌</span>
+              <span className="h-3.5 w-3.5 rounded-full bg-black animate-ping"></span>
+              <span className="font-hindi tracking-wide">वैन में बैठो 🚌</span>
             </button>
-            <p className="text-xs text-white/50 mt-4">
-              Tap anywhere to launch unmuted audio & video
+
+            <p className="text-xs sm:text-sm font-hindi text-white/60 mt-6 tracking-wider">
+              भैया ने 93.5 RED FM चला दिया है... पीछे वाली सीट तैयार है!
             </p>
           </div>
         </div>
       )}
 
-      {/* Top Bar Widgets */}
-      <ISTClock />
-      <LivePassengersCounter />
+      {/* Top Header Controls Area */}
+      <header className="relative z-20 w-full px-4 pt-3 sm:pt-5 flex flex-wrap items-center justify-between gap-2 max-w-7xl mx-auto">
+        <div className="flex items-center gap-2">
+          <ISTClock />
+          <LivePassengersCounter />
+        </div>
 
-      <div className="fixed right-5 top-5 z-20 flex items-center gap-2">
-        <a 
-          href={SPOTIFY_PLAYLIST_URL} 
-          target="_blank" 
-          rel="noreferrer" 
-          className="group/pill flex items-center gap-2 rounded-full text-sm font-medium text-white p-2.5 sm:py-2 sm:pl-3 sm:pr-3.5 drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] transition hover:opacity-80 active:scale-95"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z"></path></svg>
-          <span className="hidden sm:inline">Spotify</span>
-          <span className="hidden sm:inline-flex"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="-rotate-45 opacity-50 transition group-hover/pill:opacity-90"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
-        </a>
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <a 
+            href={SPOTIFY_PLAYLIST_URL} 
+            target="_blank" 
+            rel="noreferrer" 
+            className="group/pill flex items-center gap-1.5 rounded-full text-xs sm:text-sm font-medium text-white px-3 py-1.5 bg-black/40 backdrop-blur-md border border-white/20 shadow-md transition hover:bg-white/20 active:scale-95"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white" className="shrink-0"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z"></path></svg>
+            <span className="hidden sm:inline">Spotify</span>
+          </a>
 
-        <a 
-          href={YOUTUBE_MUSIC_PLAYLIST_URL} 
-          target="_blank" 
-          rel="noreferrer" 
-          className="group/pill flex items-center gap-2 rounded-full text-sm font-medium text-white p-2.5 sm:py-2 sm:pl-3 sm:pr-3.5 drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] transition hover:opacity-80 active:scale-95"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0zm0 19.104c-3.924 0-7.104-3.18-7.104-7.104S8.076 4.896 12 4.896s7.104 3.18 7.104 7.104-3.18 7.104-7.104 7.104zm0-13.332c-3.432 0-6.228 2.796-6.228 6.228S8.568 18.228 12 18.228s6.228-2.796 6.228-6.228S15.432 5.772 12 5.772zM9.684 15.54V8.46L15.816 12l-6.132 3.54z"></path></svg>
-          <span className="hidden sm:inline">YT Music</span>
-          <span className="hidden sm:inline-flex"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="-rotate-45 opacity-50 transition group-hover/pill:opacity-90"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
-        </a>
-      </div>
+          <a 
+            href={YOUTUBE_MUSIC_PLAYLIST_URL} 
+            target="_blank" 
+            rel="noreferrer" 
+            className="group/pill flex items-center gap-1.5 rounded-full text-xs sm:text-sm font-medium text-white px-3 py-1.5 bg-black/40 backdrop-blur-md border border-white/20 shadow-md transition hover:bg-white/20 active:scale-95"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white" className="shrink-0"><path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0zm0 19.104c-3.924 0-7.104-3.18-7.104-7.104S8.076 4.896 12 4.896s7.104 3.18 7.104 7.104-3.18 7.104-7.104 7.104zm0-13.332c-3.432 0-6.228 2.796-6.228 6.228S8.568 18.228 12 18.228s6.228-2.796 6.228-6.228S15.432 5.772 12 5.772zM9.684 15.54V8.46L15.816 12l-6.132 3.54z"></path></svg>
+            <span className="hidden sm:inline">YT Music</span>
+          </a>
+        </div>
+      </header>
 
       {/* Central Hero Branding */}
-      <div className="mt-[16vh] flex flex-col items-center px-6 text-center z-20">
-        <h1 className="text-6xl sm:text-8xl md:text-9xl font-extrabold tracking-tight text-white drop-shadow-[0_4px_28px_rgba(0,0,0,0.85)] font-hindi">
+      <div className="relative z-20 flex flex-col items-center px-4 text-center my-auto">
+        <h1 className="text-6xl sm:text-8xl md:text-9xl font-extrabold tracking-tight text-white drop-shadow-[0_4px_35px_rgba(0,0,0,0.95)] font-hindi">
           ओम्नी वैन
         </h1>
+        <p className="mt-2 text-xs sm:text-sm font-hindi text-amber-300/90 tracking-wider font-medium drop-shadow-md">
+          पीछे वाली सीट की यादें
+        </p>
       </div>
 
       {/* Bottom Deck Wrapper */}
-      <div className="mb-[8vh] flex flex-col items-center gap-3 z-20 px-6 w-full">
+      <footer className="relative z-20 flex flex-col items-center gap-2.5 px-3 pb-4 sm:pb-6 w-full max-w-xl mx-auto">
         
         {/* Minimal Glassmorphism "Jaldi Karo!" Button */}
         <button
@@ -183,9 +194,9 @@ export default function App() {
               setIntroFinished(false);
             }
           }}
-          className="group/pill inline-flex items-center gap-2 rounded-full py-2 px-5 text-xs font-bold text-white bg-white/10 backdrop-blur-xl border border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.4)] transition hover:bg-white/25 active:scale-95 ring-1 ring-white/20"
+          className="group/pill inline-flex items-center gap-2 rounded-full py-1.5 px-4 text-xs font-bold text-white bg-white/10 backdrop-blur-xl border border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.4)] transition hover:bg-white/25 active:scale-95 ring-1 ring-white/20"
         >
-          <span className="inline-block w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+          <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
           <span>Jaldi Karo! 🚌</span>
         </button>
 
@@ -199,7 +210,7 @@ export default function App() {
           customTrackId={customYoutubeId}
           hasStarted={hasStarted}
         />
-      </div>
+      </footer>
 
       {/* Playlist Drawer Modal */}
       <PlaylistDrawer
