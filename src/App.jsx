@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ISTClock from './components/ISTClock';
 import LivePassengersCounter from './components/LivePassengersCounter';
 import AudioPlayer from './components/AudioPlayer';
@@ -6,24 +6,40 @@ import PlaylistDrawer from './components/PlaylistDrawer';
 import { SPOTIFY_PLAYLIST_URL, YOUTUBE_MUSIC_PLAYLIST_URL, OMNI_PLAYLIST } from './data/playlist';
 
 export default function App() {
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0); // Starts with Aahun Aahun!
+  // Pin active track in localStorage
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(() => {
+    const saved = localStorage.getItem('omni_pinned_track_index');
+    return saved !== null ? parseInt(saved, 10) : 0;
+  });
+
   const [isPlaylistOpen, setIsPlaylistOpen] = useState(false);
   const [customYoutubeId, setCustomYoutubeId] = useState(null);
 
   const [musicVolume, setMusicVolume] = useState(0.0);
   const [introFinished, setIntroFinished] = useState(false);
+  const [isVideoMuted, setIsVideoMuted] = useState(true);
   const videoRef = useRef(null);
+
+  const handleSetTrack = (idx) => {
+    setCurrentTrackIndex(idx);
+    localStorage.setItem('omni_pinned_track_index', idx);
+  };
 
   // Instant Autoplay Muted Video on Mount
   useEffect(() => {
     const video = videoRef.current;
     if (video) {
       video.muted = true;
-      video.play().catch(err => console.log("Autoplay notice:", err));
+      setIsVideoMuted(true);
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(err => console.log("Muted autoplay notice:", err));
+      }
     }
   }, []);
 
   // Intro Audio Crossfade & Seamless Last 5 Seconds Video Vibe Loop
+  // CRITICAL FIX: Intro countdown ONLY runs when video is UNMUTED!
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -32,19 +48,22 @@ export default function App() {
       const t = video.currentTime;
       const duration = video.duration || 15;
 
-      if (!introFinished && t < 6.0) {
-        if (!video.muted) video.volume = 1.0;
-        setMusicVolume(0.0);
-      } 
-      else if (!introFinished && t >= 6.0 && t <= 8.5) {
-        const prog = (t - 6.0) / 2.5;
-        if (!video.muted) video.volume = Math.max(0, 1 - prog);
-        setMusicVolume(Math.min(0.85, prog * 0.85));
-      } 
-      else if (!introFinished && t > 8.5) {
-        if (!video.muted) video.volume = 0.0;
-        setMusicVolume(0.85);
-        setIntroFinished(true);
+      // Only advance intro voice crossfade if video is UNMUTED
+      if (!video.muted && !introFinished) {
+        if (t < 6.0) {
+          video.volume = 1.0;
+          setMusicVolume(0.0);
+        } 
+        else if (t >= 6.0 && t <= 8.5) {
+          const prog = (t - 6.0) / 2.5;
+          video.volume = Math.max(0, 1 - prog);
+          setMusicVolume(Math.min(0.85, prog * 0.85));
+        } 
+        else if (t > 8.5) {
+          video.volume = 0.0;
+          setMusicVolume(0.85);
+          setIntroFinished(true);
+        }
       }
 
       // Continuous Vibe Loop of last 5 seconds
@@ -58,18 +77,19 @@ export default function App() {
     return () => video.removeEventListener('timeupdate', handleTimeUpdate);
   }, [introFinished]);
 
-  // Trigger "Jaldi Karo!" Audio Experience
-  const startJaldiKaroAudio = () => {
+  // Unmute Video & Start 8s Van Arrival Voice Experience
+  const triggerUnmuteAndStartVoice = useCallback(() => {
     const video = videoRef.current;
     if (video) {
-      setIntroFinished(false);
       video.muted = false;
+      setIsVideoMuted(false);
+      setIntroFinished(false);
       video.currentTime = 0;
       video.volume = 1.0;
       setMusicVolume(0.0);
-      video.play().catch(e => console.log('Jaldi Karo play:', e));
+      video.play().catch(e => console.log('Unmute play:', e));
     }
-  };
+  }, []);
 
   const handleCustomYoutubeUrl = (input) => {
     let videoId = input;
@@ -79,7 +99,12 @@ export default function App() {
   };
 
   return (
-    <main className="relative flex min-h-dvh flex-1 flex-col items-center justify-between overflow-hidden select-none">
+    <main 
+      onClick={() => {
+        if (isVideoMuted) triggerUnmuteAndStartVoice();
+      }}
+      className="relative flex min-h-dvh flex-1 flex-col items-center justify-between overflow-hidden select-none cursor-pointer"
+    >
       
       {/* Background Full-Bleed Video - Layer 0 (Instant AutoPlay) */}
       <div className="fixed inset-0 z-0 bg-black overflow-hidden">
@@ -136,17 +161,27 @@ export default function App() {
         {/* Minimal Glassmorphism "Jaldi Karo!" Button */}
         <button
           type="button"
-          onClick={startJaldiKaroAudio}
-          className="group/pill inline-flex items-center gap-2 rounded-full py-1.5 px-4 text-xs font-semibold text-white bg-white/10 backdrop-blur-xl border border-white/25 shadow-lg transition hover:bg-white/20 active:scale-95"
+          onClick={(e) => {
+            e.stopPropagation();
+            triggerUnmuteAndStartVoice();
+          }}
+          className="group/pill inline-flex items-center gap-2 rounded-full py-2 px-5 text-xs font-bold text-white bg-white/10 backdrop-blur-xl border border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.4)] transition hover:bg-white/25 active:scale-95 ring-1 ring-white/20"
         >
-          <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+          <span className="inline-block w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
           <span>Jaldi Karo! 🚌</span>
         </button>
+
+        {/* Unmute Prompt Banner if Video is Muted */}
+        {isVideoMuted && (
+          <p className="text-[11px] font-medium text-amber-300/90 tracking-wide animate-pulse drop-shadow">
+            🔊 Tap anywhere or click 'Jaldi Karo!' to hear Van Arrival Dialogue
+          </p>
+        )}
 
         {/* Bottom Music Player Pill */}
         <AudioPlayer
           currentTrackIndex={currentTrackIndex}
-          onTrackChange={setCurrentTrackIndex}
+          onTrackChange={handleSetTrack}
           onOpenPlaylist={() => setIsPlaylistOpen(true)}
           musicVolume={musicVolume}
           customTrackId={customYoutubeId}
@@ -158,7 +193,7 @@ export default function App() {
         isOpen={isPlaylistOpen}
         onClose={() => setIsPlaylistOpen(false)}
         currentTrackIndex={currentTrackIndex}
-        onSelectTrack={(idx) => { setCustomYoutubeId(null); setCurrentTrackIndex(idx); }}
+        onSelectTrack={(idx) => { setCustomYoutubeId(null); handleSetTrack(idx); }}
         onCustomYoutubeUrl={handleCustomYoutubeUrl}
       />
 
