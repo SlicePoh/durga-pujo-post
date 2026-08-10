@@ -19,7 +19,7 @@ const AudioPlayer = forwardRef(({
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState({ current: 0, duration: 0 });
 
-  // ONE SINGLE UNIFIED AUDIO ELEMENT
+  // SINGLE UNIFIED AUDIO STREAM FOR ALL TRACKS
   const audioRef = useRef(null);
 
   const activeTrack = customTrackId 
@@ -38,26 +38,31 @@ const AudioPlayer = forwardRef(({
       if (aud) {
         aud.currentTime = 0;
         aud.volume = Math.max(0, Math.min(1, musicVolume));
-        aud.play().then(() => setIsPlaying(true)).catch(err => console.log("Audio start error:", err));
+        aud.play()
+          .then(() => setIsPlaying(true))
+          .catch(err => console.log("Audio start error:", err));
       }
     }
   }));
 
-  // Handle track changes cleanly on the single audio line
+  // UNCONDITIONAL INSTANT AUTOPLAY WHEN TRACK CHANGES (FIXES STUCK PLAYBACK)
   useEffect(() => {
     const aud = audioRef.current;
-    if (!aud) return;
+    if (!aud || !activeTrack.audioUrl) return;
 
     aud.src = activeTrack.audioUrl;
     aud.currentTime = 0;
-    aud.volume = Math.max(0, Math.min(1, musicVolume));
+    aud.volume = Math.max(0, Math.min(1, musicVolume > 0 ? musicVolume : 1.0));
     
-    if (isPlaying) {
-      aud.play().then(() => setIsPlaying(true)).catch(e => console.log("Track play notice:", e));
+    const playPromise = aud.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => setIsPlaying(true))
+        .catch(err => console.log("Track change play catch:", err));
     }
-  }, [currentTrackIndex]);
+  }, [currentTrackIndex, activeTrack.audioUrl]);
 
-  // Synchronize Volume Smoothly on the single audio line
+  // Synchronize Volume Smoothly
   useEffect(() => {
     const aud = audioRef.current;
     if (aud) {
@@ -101,7 +106,7 @@ const AudioPlayer = forwardRef(({
 
   return (
     <div className="w-full max-w-xl mx-auto z-30">
-      {/* SINGLE STREAMING AUDIO LINE */}
+      {/* SINGLE UNIFIED AUDIO ELEMENT */}
       <audio 
         ref={audioRef} 
         src={activeTrack.audioUrl} 
@@ -142,6 +147,7 @@ const AudioPlayer = forwardRef(({
             type="button"
             onClick={() => onTrackChange((currentTrackIndex - 1 + OMNI_PLAYLIST.length) % OMNI_PLAYLIST.length)} 
             className="grid h-9 w-9 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white active:scale-95"
+            aria-label="Previous track"
           >
             <SkipBack className="w-4 h-4 fill-current" />
           </button>
@@ -150,6 +156,7 @@ const AudioPlayer = forwardRef(({
             type="button"
             onClick={togglePlay} 
             className="grid h-11 w-11 place-items-center rounded-full bg-white text-black shadow-lg transition hover:scale-105 active:scale-95"
+            aria-label={isPlaying ? "Pause" : "Play"}
           >
             {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current ml-0.5" />}
           </button>
@@ -158,6 +165,7 @@ const AudioPlayer = forwardRef(({
             type="button"
             onClick={() => onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length)} 
             className="grid h-9 w-9 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white active:scale-95"
+            aria-label="Next track"
           >
             <SkipForward className="w-4 h-4 fill-current" />
           </button>
@@ -166,6 +174,7 @@ const AudioPlayer = forwardRef(({
             type="button"
             onClick={onOpenPlaylist} 
             className="grid h-9 w-9 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white active:scale-95 ml-1"
+            aria-label="Open playlist"
           >
             <ListMusic className="w-4 h-4" />
           </button>
