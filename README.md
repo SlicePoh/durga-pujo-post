@@ -6,7 +6,38 @@
 
 ---
 
-## ✨ Features
+## 🤖 BUILD YOUR OWN WEBSITE (No Coding Knowledge Required!)
+
+Want to create your own personalized web experience (e.g. *90s Cybercafe*, *Lo-Fi Rain Drive*, *Retro Anime Train*, *Gaming Den*)? **You don't need to know how to code!** You can use AI to build it for you in 2 minutes.
+
+---
+
+### ✏️ BLOCK 1: YOUR CUSTOM IDEA (Fill this in!)
+Before using the AI prompt in [`AGENT_INSTRUCTIONS.md`](./AGENT_INSTRUCTIONS.md), decide on your idea:
+
+1. **Theme Name**: (e.g. *90s Cybercafe in Delhi* / *Tokyo Rain Drive*)
+2. **Background Video**: (e.g. *Rainy window view* / *Retro driving loop*)
+3. **Playlist**: (e.g. *Your top 5 favorite songs*)
+4. **Button Text**: (e.g. *Tap to Enter 🎮* / *Start Ride 🌧️*)
+
+---
+
+### 📢 BLOCK 2: HOW TO GENERATE IT USING GEMINI / CHATGPT / CURSOR
+
+Follow these 4 simple steps:
+
+1. **Open the Prompt File**: Click on [`AGENT_INSTRUCTIONS.md`](./AGENT_INSTRUCTIONS.md).
+2. **Copy the Text**: Fill in your idea into **Block 1** and copy the prompt text.
+3. **Paste into Gemini or ChatGPT**:
+   - Go to [Google Gemini](https://gemini.google.com) or [ChatGPT](https://chatgpt.com) or your AI Editor (Antigravity / Cursor).
+   - Paste the prompt and press **Enter**.
+4. **Publish Free**:
+   - Ask Gemini or ChatGPT: *"How do I publish this live on Vercel for free?"*
+   - It will guide you step-by-step to get your live website link!
+
+---
+
+## ✨ Features of this Website
 
 - 🎥 **Seamless Video Loop**: High-definition video background capturing the authentic Omni Van commute experience.
 - 🎚️ **8-Second Audio Mixing Engine**: Video dialogue automatically crossfades from 100% down to ambient level while your favorite nostalgic tracks fade up.
@@ -18,21 +49,7 @@
 
 ---
 
-## 🤖 Build Your Own Experience Using AI Agents!
-
-Want to create your own version of this website tailored to **your own theme** (e.g., *90s Cybercafe*, *Retro Anime Train*, *Lo-Fi Rain Drive*, *Gaming Den*)?
-
-We have included a complete **AI Agent Prompt** in [`AGENT_INSTRUCTIONS.md`](./AGENT_INSTRUCTIONS.md).
-
-### How to use it:
-1. Open [`AGENT_INSTRUCTIONS.md`](./AGENT_INSTRUCTIONS.md).
-2. Copy the entire prompt text block.
-3. Paste it into your favorite AI Coding Assistant (**Antigravity**, **Cursor**, **ChatGPT**, **Claude**, or **Windsurf**).
-4. Specify your desired theme, video background, and playlist. The AI will generate a fully customized web app for you!
-
----
-
-## 🛠️ Manual Quick Start & Installation
+## 🛠️ Developer Quick Start (For Coders)
 
 ### 1. Clone the repository
 ```bash

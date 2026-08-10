@@ -1,8 +1,46 @@
-# AI Agent Prompt: Build Your Own Interactive Audio-Visual Nostalgia Experience 🚌🎵
+# 🚀 AI AGENT PROMPT: Build Your Own Interactive Audio-Visual Experience
 
-Copy and paste the entire prompt below into any AI Coding Assistant (such as Antigravity, Cursor, Claude Code, ChatGPT, or Windsurf) to generate a customized audio-visual web app tailored to your choice of theme (e.g., *90s Cybercafe*, *Retro School Bus*, *Midnight Highway Drive*, *Lofi Train Ride*, *Anime City Walk*).
+> 💡 **WELCOME! NO CODING OR GITHUB EXPERIENCE REQUIRED.**  
+> You can create your own personalized, interactive website (like a *90s Cybercafe*, *Lo-Fi Rain Drive*, *Retro Gaming Den*, or *Midnight Train*) in just 2 simple steps using Google Gemini, ChatGPT, Claude, Antigravity, or Cursor!
 
 ---
+
+## ✏️ BLOCK 1: FILL IN YOUR CUSTOM IDEA HERE (Edit this before copying!)
+
+Replace the bracketed text `[...]` below with your own custom idea:
+
+```text
+========================================================================
+MY CUSTOM WEBSITE IDEA:
+- THEME NAME: [e.g. 90s Cybercafe / Rainy Night Drive / Retro Gaming Room]
+- DESCRIPTION / MOOD: [e.g. Warm nostalgic vibes of playing games in a 90s cafe]
+- BACKGROUND VIDEO: [e.g. Rainy window view / Retro car driving on highway]
+- MY FAVORITE PLAYLIST / SONGS: [e.g. 5-10 songs you want in the music player]
+- START BUTTON TEXT: [e.g. "Tap to Start 🎮" / "Jaldi Karo! 🚌" / "Drive Night 🌧️"]
+- COLOR ACCENTS: [e.g. Neon Cyberpunk Purple, Warm Sunset Amber, Emerald Green]
+========================================================================
+```
+
+---
+
+## 📢 BLOCK 2: HOW TO USE THIS WITH GEMINI / CHATGPT / CURSOR (Step-by-Step Guide for Laymen)
+
+Follow these 4 super-simple steps to build your site without typing a single line of code yourself:
+
+1. **Step 1: Fill in Block 1 above** with your custom theme, songs, and video idea.
+2. **Step 2: Copy Everything** on this page (from `# TASK: Build an Interactive Audio-Visual Web Experience` to the end).
+3. **Step 3: Paste into Google Gemini or ChatGPT**:
+   - Go to [Google Gemini](https://gemini.google.com) or [ChatGPT](https://chatgpt.com) or open your AI Editor (Antigravity / Cursor).
+   - Paste the entire copied prompt and hit **Enter**.
+4. **Step 4: Let AI Build & Publish**:
+   - The AI will generate all the files for you.
+   - Ask the AI: *"How do I publish this live on Vercel for free?"* and it will give you a live link to share with your friends!
+
+---
+
+---
+
+# 🤖 MASTER AI PROMPT (PASTE EVERYTHING BELOW INTO GEMINI / CHATGPT / AI AGENT)
 
 ```markdown
 # TASK: Build an Interactive Audio-Visual Web Experience
