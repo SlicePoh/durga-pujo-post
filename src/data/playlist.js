@@ -1,5 +1,15 @@
 export const OMNI_PLAYLIST = [
   {
+    id: "aahun-aahun",
+    youtubeId: "n4p5c4o_t4c",
+    title: "Aahun Aahun",
+    artist: "Neeraj Shridhar, Master Saleem & Suzie Q",
+    movie: "Love Aaj Kal (2009)",
+    year: "2009",
+    tagline: "First banger on the school van morning ride 🚌",
+    cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=600&auto=format&fit=crop"
+  },
+  {
     id: "give-me-some-sunshine",
     youtubeId: "Vd9QvvdQG9E",
     title: "Give Me Some Sunshine",
@@ -121,5 +131,6 @@ export const OMNI_PLAYLIST = [
   }
 ];
 
-export const SPOTIFY_PLAYLIST_URL = "https://open.spotify.com/playlist/37i9dQZF1DXaqRM6q2e37I"; // 2000s Bollywood nostalgic playlist
-export const YOUTUBE_MUSIC_PLAYLIST_URL = "https://music.youtube.com/playlist?list=PLTJ1PnzCWyFw"; // YT Music playlist
+export const SPOTIFY_PLAYLIST_URL = "https://open.spotify.com/playlist/1GsF2PLwdrRXVQr3S3KS5x?si=b8765d9a93d44afb";
+export const YOUTUBE_MUSIC_PLAYLIST_URL = "https://music.youtube.com/playlist?list=PLakxceWWkI7w&si=c7atNGw1N5de895I";
+export const SPOTIFY_EMBED_URL = "https://open.spotify.com/embed/playlist/1GsF2PLwdrRXVQr3S3KS5x?utm_source=generator&si=845f772cf59b4360";

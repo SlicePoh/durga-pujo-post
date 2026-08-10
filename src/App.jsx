@@ -6,7 +6,7 @@ import PlaylistDrawer from './components/PlaylistDrawer';
 import { SPOTIFY_PLAYLIST_URL, YOUTUBE_MUSIC_PLAYLIST_URL, OMNI_PLAYLIST } from './data/playlist';
 
 export default function App() {
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0); // Starts with Aahun Aahun!
   const [isPlaylistOpen, setIsPlaylistOpen] = useState(false);
   const [customYoutubeId, setCustomYoutubeId] = useState(null);
 
@@ -14,12 +14,12 @@ export default function App() {
   const [introFinished, setIntroFinished] = useState(false);
   const videoRef = useRef(null);
 
-  // Muted autoplay on mount
+  // Instant Autoplay Muted Video on Mount
   useEffect(() => {
     const video = videoRef.current;
     if (video) {
       video.muted = true;
-      video.play().catch(err => console.log("Muted autoplay:", err));
+      video.play().catch(err => console.log("Autoplay notice:", err));
     }
   }, []);
 
@@ -32,25 +32,22 @@ export default function App() {
       const t = video.currentTime;
       const duration = video.duration || 15;
 
-      // Phase 1: First 6 seconds - Video dialogue audio at 100%
       if (!introFinished && t < 6.0) {
         if (!video.muted) video.volume = 1.0;
         setMusicVolume(0.0);
       } 
-      // Phase 2: 6s to 8.5s - Video audio decays down to 0, Music ramps up to 85%
       else if (!introFinished && t >= 6.0 && t <= 8.5) {
         const prog = (t - 6.0) / 2.5;
         if (!video.muted) video.volume = Math.max(0, 1 - prog);
         setMusicVolume(Math.min(0.85, prog * 0.85));
       } 
-      // Phase 3: Past 8.5s - Video dialogue muted, Music playing at target volume
       else if (!introFinished && t > 8.5) {
         if (!video.muted) video.volume = 0.0;
         setMusicVolume(0.85);
         setIntroFinished(true);
       }
 
-      // Vibe Loop Mechanics: When video reaches near the end of video, loop ONLY the last 5 seconds (vibing section)
+      // Vibe Loop: Continuous loop of last 5 seconds
       if (t >= duration - 0.3) {
         const vibeLoopStart = Math.max(8.0, duration - 5.0);
         video.currentTime = vibeLoopStart;
@@ -87,7 +84,7 @@ export default function App() {
       className="relative flex min-h-dvh flex-1 flex-col items-center justify-between overflow-hidden cursor-pointer select-none"
     >
       
-      {/* Background Full-Bleed Video - Layer 0 */}
+      {/* Background Full-Bleed Video - Layer 0 (Instant AutoPlay) */}
       <div className="fixed inset-0 z-0 bg-black overflow-hidden">
         <video
           ref={videoRef}
@@ -101,7 +98,7 @@ export default function App() {
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/50" />
       </div>
 
-      {/* Top Bar Widgets (saloon.wtf style) */}
+      {/* Top Bar Widgets */}
       <ISTClock />
       <LivePassengersCounter />
 
@@ -129,14 +126,14 @@ export default function App() {
         </a>
       </div>
 
-      {/* Central Hero Branding (saloon.wtf style) */}
+      {/* Central Hero Branding */}
       <div className="mt-[16vh] flex flex-col items-center px-6 text-center z-20">
         <h1 className="text-6xl sm:text-8xl md:text-9xl font-extrabold tracking-tight text-white drop-shadow-[0_4px_28px_rgba(0,0,0,0.85)] font-hindi">
           ओम्नी वैन
         </h1>
       </div>
 
-      {/* Bottom Music Player Pill (saloon.wtf style) */}
+      {/* Bottom Music Player Pill */}
       <div className="mb-[8vh] flex w-full justify-center px-6 z-20">
         <AudioPlayer
           currentTrackIndex={currentTrackIndex}
