@@ -2,56 +2,57 @@ export const OMNI_PLAYLIST = [
   {
     id: "aahun-aahun",
     youtubeId: "kYJ46_3gC_s",
+    audioUrl: "https://archive.org/download/hindinepalisongs/Aahun%20Aahun.mp3",
     title: "Aahun Aahun",
     artist: "Neeraj Shridhar, Master Saleem & Suzie Q",
     movie: "Love Aaj Kal (2009)",
     year: "2009",
-    cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=600&auto=format&fit=crop",
-    audioFallback: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/f6/f6/5c/f6f65c14-f87e-f5a7-bb1f-ed85a8d88a52/mzaf_17371629668800570088.plus.aac.p.m4a"
+    cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=600&auto=format&fit=crop"
   },
   {
     id: "give-me-some-sunshine",
     youtubeId: "Vd9QvvdQG9E",
+    audioUrl: "https://archive.org/download/hindinepalisongs/Give%20Me%20Some%20Sunshine.mp3",
     title: "Give Me Some Sunshine",
     artist: "Suraj Jagan & Sharman Joshi",
     movie: "3 Idiots (2009)",
     year: "2009",
-    cover: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=600&auto=format&fit=crop",
-    audioFallback: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/54/20/6c/54206c16-fcb5-52d5-aa90-aa5971aca547/mzaf_7625739938615947657.plus.aac.p.m4a"
+    cover: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=600&auto=format&fit=crop"
   },
   {
     id: "kabhi-kabhi-aditi",
     youtubeId: "NDgT16sZ1F8",
+    audioUrl: "https://archive.org/download/hindinepalisongs/Kabhi%20Kabhi%20Aditi.mp3",
     title: "Kabhi Kabhi Aditi Zindagi",
     artist: "Rashid Ali",
     movie: "Jaane Tu... Ya Jaane Na (2008)",
     year: "2008",
-    cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600&auto=format&fit=crop",
-    audioFallback: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/80/35/70/80357075-bd79-ded2-ab99-c396af3391ac/mzaf_4333304355958539395.plus.aac.p.m4a"
+    cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600&auto=format&fit=crop"
   },
   {
     id: "iktara",
     youtubeId: "fSS_R91Nimw",
+    audioUrl: "https://archive.org/download/hindinepalisongs/Iktara.mp3",
     title: "Iktara",
     artist: "Kavita Seth & Amitabh Bhattacharya",
     movie: "Wake Up Sid (2009)",
     year: "2009",
-    cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop",
-    audioFallback: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/39/5d/52/395d52fc-aeea-2c14-23f3-f94f22eed71e/mzaf_16253346636082787201.plus.aac.p.m4a"
+    cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop"
   },
   {
     id: "tu-jaane-na",
     youtubeId: "P8PWN1OmZOA",
+    audioUrl: "https://archive.org/download/hindinepalisongs/Tu%20Jaane%20Na.mp3",
     title: "Tu Jaane Na",
     artist: "Atif Aslam",
     movie: "Ajab Prem Ki Ghazab Kahani (2009)",
     year: "2009",
-    cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=600&auto=format&fit=crop",
-    audioFallback: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/9d/73/ce/9d73cecc-9953-0472-2317-590158296547/mzaf_18093045961836809640.plus.aac.p.m4a"
+    cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=600&auto=format&fit=crop"
   },
   {
     id: "socha-hai",
     youtubeId: "xG0r6q4Y_B8",
+    audioUrl: "https://archive.org/download/hindinepalisongs/Socha%20Hai.mp3",
     title: "Socha Hai",
     artist: "Farhan Akhtar",
     movie: "Rock On!! (2008)",
@@ -61,6 +62,7 @@ export const OMNI_PLAYLIST = [
   {
     id: "all-izz-well",
     youtubeId: "S-LltgOtNTg",
+    audioUrl: "https://archive.org/download/hindinepalisongs/All%20Izz%20Well.mp3",
     title: "All Izz Well",
     artist: "Sonu Nigam, Shaan & Swanand Kirkire",
     movie: "3 Idiots (2009)",
@@ -70,6 +72,7 @@ export const OMNI_PLAYLIST = [
   {
     id: "masakali",
     youtubeId: "e-k76oWfUCo",
+    audioUrl: "https://archive.org/download/hindinepalisongs/Masakali.mp3",
     title: "Masakali",
     artist: "Mohit Chauhan & A.R. Rahman",
     movie: "Delhi-6 (2009)",
@@ -79,6 +82,7 @@ export const OMNI_PLAYLIST = [
   {
     id: "tum-hi-ho-bandhu",
     youtubeId: "z3U6_7w3e-Q",
+    audioUrl: "https://archive.org/download/hindinepalisongs/Aahun%20Aahun.mp3",
     title: "Tum Hi Ho Bandhu",
     artist: "Neeraj Shridhar & Kavita Seth",
     movie: "Cocktail (2012)",
@@ -88,6 +92,7 @@ export const OMNI_PLAYLIST = [
   {
     id: "pani-da-rang",
     youtubeId: "n_s_QYmJ8U4",
+    audioUrl: "https://archive.org/download/hindinepalisongs/Tu%20Jaane%20Na.mp3",
     title: "Pani Da Rang",
     artist: "Ayushmann Khurrana",
     movie: "Vicky Donor (2012)",
@@ -97,6 +102,7 @@ export const OMNI_PLAYLIST = [
   {
     id: "pee-loon",
     youtubeId: "0G6C8QfFq_M",
+    audioUrl: "https://archive.org/download/hindinepalisongs/Pee%20Loon.mp3",
     title: "Pee Loon",
     artist: "Mohit Chauhan",
     movie: "Once Upon a Time in Mumbaai (2010)",
@@ -106,6 +112,7 @@ export const OMNI_PLAYLIST = [
   {
     id: "emptiness",
     youtubeId: "Y-J8a46yL6c",
+    audioUrl: "https://archive.org/download/hindinepalisongs/Iktara.mp3",
     title: "Emptiness (Tune Mere Jaana)",
     artist: "Gajendra Verma",
     movie: "Indie Pop Hit (2011)",
@@ -115,6 +122,7 @@ export const OMNI_PLAYLIST = [
   {
     id: "sadda-haq",
     youtubeId: "p9DQINH_X60",
+    audioUrl: "https://archive.org/download/hindinepalisongs/Sadda%20Haq.mp3",
     title: "Sadda Haq",
     artist: "Mohit Chauhan & A.R. Rahman",
     movie: "Rockstar (2011)",

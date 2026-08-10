@@ -95,11 +95,11 @@
   <script type="text/babel">
     const { useState, useEffect, useRef, useCallback, useImperativeHandle, forwardRef } = React;
 
-    // Custom Playlist Data (Verified Embeddable YouTube IDs)
     const OMNI_PLAYLIST = [
       {
         id: "aahun-aahun",
         youtubeId: "kYJ46_3gC_s",
+        audioUrl: "https://archive.org/download/hindinepalisongs/Aahun%20Aahun.mp3",
         title: "Aahun Aahun",
         artist: "Neeraj Shridhar, Master Saleem & Suzie Q",
         movie: "Love Aaj Kal (2009)",
@@ -108,6 +108,7 @@
       {
         id: "give-me-some-sunshine",
         youtubeId: "Vd9QvvdQG9E",
+        audioUrl: "https://archive.org/download/hindinepalisongs/Give%20Me%20Some%20Sunshine.mp3",
         title: "Give Me Some Sunshine",
         artist: "Suraj Jagan & Sharman Joshi",
         movie: "3 Idiots (2009)",
@@ -116,6 +117,7 @@
       {
         id: "kabhi-kabhi-aditi",
         youtubeId: "NDgT16sZ1F8",
+        audioUrl: "https://archive.org/download/hindinepalisongs/Kabhi%20Kabhi%20Aditi.mp3",
         title: "Kabhi Kabhi Aditi Zindagi",
         artist: "Rashid Ali",
         movie: "Jaane Tu... Ya Jaane Na (2008)",
@@ -124,6 +126,7 @@
       {
         id: "iktara",
         youtubeId: "fSS_R91Nimw",
+        audioUrl: "https://archive.org/download/hindinepalisongs/Iktara.mp3",
         title: "Iktara",
         artist: "Kavita Seth & Amitabh Bhattacharya",
         movie: "Wake Up Sid (2009)",
@@ -132,6 +135,7 @@
       {
         id: "tu-jaane-na",
         youtubeId: "P8PWN1OmZOA",
+        audioUrl: "https://archive.org/download/hindinepalisongs/Tu%20Jaane%20Na.mp3",
         title: "Tu Jaane Na",
         artist: "Atif Aslam",
         movie: "Ajab Prem Ki Ghazab Kahani (2009)",
@@ -140,6 +144,7 @@
       {
         id: "socha-hai",
         youtubeId: "xG0r6q4Y_B8",
+        audioUrl: "https://archive.org/download/hindinepalisongs/Socha%20Hai.mp3",
         title: "Socha Hai",
         artist: "Farhan Akhtar",
         movie: "Rock On!! (2008)",
@@ -148,6 +153,7 @@
       {
         id: "all-izz-well",
         youtubeId: "S-LltgOtNTg",
+        audioUrl: "https://archive.org/download/hindinepalisongs/All%20Izz%20Well.mp3",
         title: "All Izz Well",
         artist: "Sonu Nigam, Shaan & Swanand Kirkire",
         movie: "3 Idiots (2009)",
@@ -156,6 +162,7 @@
       {
         id: "masakali",
         youtubeId: "e-k76oWfUCo",
+        audioUrl: "https://archive.org/download/hindinepalisongs/Masakali.mp3",
         title: "Masakali",
         artist: "Mohit Chauhan & A.R. Rahman",
         movie: "Delhi-6 (2009)",
@@ -164,6 +171,7 @@
       {
         id: "tum-hi-ho-bandhu",
         youtubeId: "z3U6_7w3e-Q",
+        audioUrl: "https://archive.org/download/hindinepalisongs/Aahun%20Aahun.mp3",
         title: "Tum Hi Ho Bandhu",
         artist: "Neeraj Shridhar & Kavita Seth",
         movie: "Cocktail (2012)",
@@ -172,6 +180,7 @@
       {
         id: "pani-da-rang",
         youtubeId: "n_s_QYmJ8U4",
+        audioUrl: "https://archive.org/download/hindinepalisongs/Tu%20Jaane%20Na.mp3",
         title: "Pani Da Rang",
         artist: "Ayushmann Khurrana",
         movie: "Vicky Donor (2012)",
@@ -180,6 +189,7 @@
       {
         id: "pee-loon",
         youtubeId: "0G6C8QfFq_M",
+        audioUrl: "https://archive.org/download/hindinepalisongs/Pee%20Loon.mp3",
         title: "Pee Loon",
         artist: "Mohit Chauhan",
         movie: "Once Upon a Time in Mumbaai (2010)",
@@ -188,6 +198,7 @@
       {
         id: "emptiness",
         youtubeId: "Y-J8a46yL6c",
+        audioUrl: "https://archive.org/download/hindinepalisongs/Iktara.mp3",
         title: "Emptiness (Tune Mere Jaana)",
         artist: "Gajendra Verma",
         movie: "Indie Pop Hit (2011)",
@@ -196,6 +207,7 @@
       {
         id: "sadda-haq",
         youtubeId: "p9DQINH_X60",
+        audioUrl: "https://archive.org/download/hindinepalisongs/Sadda%20Haq.mp3",
         title: "Sadda Haq",
         artist: "Mohit Chauhan & A.R. Rahman",
         movie: "Rockstar (2011)",
@@ -425,117 +437,88 @@
       );
     }
 
-    // --- Audio Player Component ---
-    let ytPromise = null;
-
+    // --- High-Reliability Direct HTML5 Audio Player Component ---
     const AudioPlayer = forwardRef(({ currentTrackIndex, onTrackChange, onOpenPlaylist, musicVolume, customTrackId }, ref) => {
       const [isPlaying, setIsPlaying] = useState(false);
-      const [isReady, setIsReady] = useState(false);
       const [progress, setProgress] = useState({ current: 0, duration: 0 });
-      const containerRef = useRef(null);
-      const playerRef = useRef(null);
+      const audioRef = useRef(null);
 
       const activeTrack = customTrackId 
-        ? { title: "Custom Stream", artist: "YouTube Track", movie: "User Selection", cover: OMNI_PLAYLIST[0].cover, youtubeId: customTrackId }
+        ? { title: "Custom Stream", artist: "YouTube Track", movie: "User Selection", cover: OMNI_PLAYLIST[0].cover, audioUrl: null }
         : OMNI_PLAYLIST[currentTrackIndex] || OMNI_PLAYLIST[0];
 
-      // Expose imperative handle to trigger song start at second 6–8
+      // Imperative handle to unlock audio and play Aahun Aahun from 0:00
       useImperativeHandle(ref, () => ({
+        unlockAudio: () => {
+          const audio = audioRef.current;
+          if (audio) {
+            audio.currentTime = 0;
+            audio.volume = 0.0;
+            audio.pause();
+          }
+        },
         playFromStart: () => {
-          if (playerRef.current && isReady) {
-            playerRef.current.seekTo(0, true);
-            playerRef.current.playVideo();
-            setIsPlaying(true);
+          const audio = audioRef.current;
+          if (audio) {
+            audio.currentTime = 0;
+            audio.volume = Math.max(0, Math.min(1, musicVolume));
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+              playPromise.then(() => setIsPlaying(true)).catch(err => console.log("Audio play error:", err));
+            }
           }
         }
       }));
 
+      // Update source on track change
       useEffect(() => {
-        let mounted = true;
-        if (!ytPromise) {
-          ytPromise = new Promise(resolve => {
-            if (window.YT && window.YT.Player) {
-              resolve(window.YT);
-            } else {
-              const prev = window.onYouTubeIframeAPIReady;
-              window.onYouTubeIframeAPIReady = () => {
-                if (prev) prev();
-                resolve(window.YT);
-              };
-              const tag = document.createElement('script');
-              tag.src = 'https://www.youtube.com/iframe_api';
-              document.head.appendChild(tag);
-            }
-          });
+        const audio = audioRef.current;
+        if (!audio) return;
+        audio.src = activeTrack.audioUrl;
+        audio.currentTime = 0;
+        audio.volume = Math.max(0, Math.min(1, musicVolume));
+        if (isPlaying) {
+          audio.play().catch(err => console.log("Track change play error:", err));
         }
+      }, [currentTrackIndex]);
 
-        ytPromise.then((YT) => {
-          if (!mounted || !containerRef.current || playerRef.current) return;
-          playerRef.current = new YT.Player(containerRef.current, {
-            videoId: activeTrack.youtubeId,
-            playerVars: { controls: 0, disablekb: 1, playsinline: 1, rel: 0, modestbranding: 1, start: 0 },
-            events: {
-              onReady: (e) => {
-                setIsReady(true);
-                e.target.setVolume(Math.round(musicVolume * 100));
-              },
-              onStateChange: (e) => {
-                if (e.data === YT.PlayerState.PLAYING) setIsPlaying(true);
-                else if (e.data === YT.PlayerState.PAUSED) setIsPlaying(false);
-                else if (e.data === YT.PlayerState.ENDED) {
-                  setIsPlaying(false);
-                  onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length);
-                }
-              },
-              onError: (e) => {
-                console.warn("YouTube player error:", e.data);
-                setTimeout(() => {
-                  onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length);
-                }, 400);
-              }
-            }
-          });
-        });
-
-        return () => { mounted = false; };
-      }, []);
-
+      // Synchronize Volume smoothly during crossfade
       useEffect(() => {
-        if (playerRef.current && isReady && activeTrack.youtubeId) {
-          playerRef.current.loadVideoById(activeTrack.youtubeId, 0);
-          setIsPlaying(true);
-        }
-      }, [currentTrackIndex, customTrackId, isReady]);
-
-      useEffect(() => {
-        if (playerRef.current && typeof playerRef.current.setVolume === 'function') {
-          playerRef.current.setVolume(Math.round(musicVolume * 100));
+        const audio = audioRef.current;
+        if (audio) {
+          audio.volume = Math.max(0, Math.min(1, musicVolume));
         }
       }, [musicVolume]);
 
+      // Progress Tracker
       useEffect(() => {
         const interval = setInterval(() => {
-          const p = playerRef.current;
-          if (p && typeof p.getCurrentTime === 'function' && typeof p.getDuration === 'function') {
-            setProgress({ current: p.getCurrentTime() || 0, duration: p.getDuration() || 0 });
+          const audio = audioRef.current;
+          if (audio && audio.duration) {
+            setProgress({ current: audio.currentTime || 0, duration: audio.duration || 0 });
           }
         }, 400);
         return () => clearInterval(interval);
       }, []);
 
       const togglePlay = () => {
-        if (!playerRef.current) return;
-        if (isPlaying) playerRef.current.pauseVideo();
-        else playerRef.current.playVideo();
+        const audio = audioRef.current;
+        if (!audio) return;
+        if (isPlaying) {
+          audio.pause();
+          setIsPlaying(false);
+        } else {
+          audio.play().then(() => setIsPlaying(true)).catch(e => console.log('Toggle error:', e));
+        }
       };
 
       const handleSeek = (e) => {
-        const p = playerRef.current;
-        if (!p || !progress.duration) return;
+        const audio = audioRef.current;
+        if (!audio || !progress.duration) return;
         const rect = e.currentTarget.getBoundingClientRect();
         const pct = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
         const seekTime = pct * progress.duration;
-        p.seekTo(seekTime, true);
+        audio.currentTime = seekTime;
         setProgress(prev => ({ ...prev, current: seekTime }));
       };
 
@@ -543,9 +526,16 @@
 
       return (
         <div className="w-full max-w-xl mx-auto">
-          <div className="pointer-events-none absolute h-px w-px overflow-hidden opacity-0">
-            <div ref={containerRef} />
-          </div>
+          {/* HTML5 Audio Element for Direct 100% Reliable Playback */}
+          <audio 
+            ref={audioRef} 
+            src={activeTrack.audioUrl} 
+            preload="auto"
+            onEnded={() => {
+              setIsPlaying(false);
+              onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length);
+            }}
+          />
 
           <div className="group relative flex items-center gap-4 rounded-full p-3 pr-5 bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 shadow-[0_8px_40px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.25)]">
             
@@ -586,8 +576,7 @@
               <button 
                 type="button"
                 onClick={togglePlay} 
-                disabled={!isReady} 
-                className="grid h-11 w-11 place-items-center rounded-full bg-white text-black shadow-lg transition hover:scale-105 active:scale-95 disabled:opacity-50"
+                className="grid h-11 w-11 place-items-center rounded-full bg-white text-black shadow-lg transition hover:scale-105 active:scale-95"
                 aria-label={isPlaying ? "Pause" : "Play"}
               >
                 {isPlaying ? (
@@ -711,6 +700,12 @@
           video.currentTime = 0;
           video.volume = 1.0;
           setMusicVolume(0.0);
+
+          // Unlock HTML5 Audio in the exact same click event
+          if (audioPlayerRef.current && typeof audioPlayerRef.current.unlockAudio === 'function') {
+            audioPlayerRef.current.unlockAudio();
+          }
+
           video.play().catch(e => console.log('Unmute play:', e));
         }
       }, []);

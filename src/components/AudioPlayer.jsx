@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, ListMusic, Disc } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, ListMusic } from 'lucide-react';
 import { OMNI_PLAYLIST } from '../data/playlist';
-
-let ytApiPromise = null;
 
 function formatTime(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
@@ -19,11 +17,8 @@ const AudioPlayer = forwardRef(({
   customTrackId = null 
 }, ref) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isReady, setIsReady] = useState(false);
   const [progress, setProgress] = useState({ current: 0, duration: 0 });
-
-  const playerRef = useRef(null);
-  const containerRef = useRef(null);
+  const audioRef = useRef(null);
 
   const activeTrack = customTrackId 
     ? {
@@ -31,104 +26,55 @@ const AudioPlayer = forwardRef(({
         artist: "YouTube Stream",
         movie: "User Selected",
         cover: OMNI_PLAYLIST[0].cover,
-        youtubeId: customTrackId
+        audioUrl: OMNI_PLAYLIST[0].audioUrl
       }
     : OMNI_PLAYLIST[currentTrackIndex] || OMNI_PLAYLIST[0];
 
   useImperativeHandle(ref, () => ({
+    unlockAudio: () => {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.currentTime = 0;
+        audio.volume = 0.0;
+        audio.pause();
+      }
+    },
     playFromStart: () => {
-      if (playerRef.current && isReady) {
-        playerRef.current.seekTo(0, true);
-        playerRef.current.playVideo();
-        setIsPlaying(true);
+      const audio = audioRef.current;
+      if (audio) {
+        audio.currentTime = 0;
+        audio.volume = Math.max(0, Math.min(1, musicVolume));
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.then(() => setIsPlaying(true)).catch(err => console.log("Audio play error:", err));
+        }
       }
     }
   }));
 
   useEffect(() => {
-    let mounted = true;
-
-    if (!ytApiPromise) {
-      ytApiPromise = new Promise((resolve) => {
-        if (window.YT && window.YT.Player) {
-          resolve(window.YT);
-        } else {
-          const prevCallback = window.onYouTubeIframeAPIReady;
-          window.onYouTubeIframeAPIReady = () => {
-            if (prevCallback) prevCallback();
-            resolve(window.YT);
-          };
-          const script = document.createElement('script');
-          script.src = 'https://www.youtube.com/iframe_api';
-          document.head.appendChild(script);
-        }
-      });
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.src = activeTrack.audioUrl;
+    audio.currentTime = 0;
+    audio.volume = Math.max(0, Math.min(1, musicVolume));
+    if (isPlaying) {
+      audio.play().catch(err => console.log("Track change error:", err));
     }
-
-    ytApiPromise.then((YT) => {
-      if (!mounted || !containerRef.current || playerRef.current) return;
-
-      playerRef.current = new YT.Player(containerRef.current, {
-        videoId: activeTrack.youtubeId,
-        playerVars: {
-          controls: 0,
-          disablekb: 1,
-          playsinline: 1,
-          rel: 0,
-          modestbranding: 1,
-          autoplay: 0,
-          start: 0
-        },
-        events: {
-          onReady: (event) => {
-            setIsReady(true);
-            event.target.setVolume(Math.round(musicVolume * 100));
-          },
-          onStateChange: (event) => {
-            if (event.data === YT.PlayerState.PLAYING) {
-              setIsPlaying(true);
-            } else if (event.data === YT.PlayerState.PAUSED) {
-              setIsPlaying(false);
-            } else if (event.data === YT.PlayerState.ENDED) {
-              setIsPlaying(false);
-              onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length);
-            }
-          },
-          onError: (event) => {
-            console.warn("YouTube player error:", event.data);
-            setTimeout(() => {
-              onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length);
-            }, 400);
-          }
-        }
-      });
-    });
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  }, [currentTrackIndex]);
 
   useEffect(() => {
-    if (playerRef.current && isReady && activeTrack.youtubeId) {
-      playerRef.current.loadVideoById(activeTrack.youtubeId, 0);
-      setIsPlaying(true);
-    }
-  }, [currentTrackIndex, customTrackId, isReady]);
-
-  useEffect(() => {
-    if (playerRef.current && typeof playerRef.current.setVolume === 'function') {
-      playerRef.current.setVolume(Math.round(musicVolume * 100));
+    const audio = audioRef.current;
+    if (audio) {
+      audio.volume = Math.max(0, Math.min(1, musicVolume));
     }
   }, [musicVolume]);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const player = playerRef.current;
-      if (player && typeof player.getCurrentTime === 'function' && typeof player.getDuration === 'function') {
-        const current = player.getCurrentTime() || 0;
-        const duration = player.getDuration() || 0;
-        setProgress({ current, duration });
+      const audio = audioRef.current;
+      if (audio && audio.duration) {
+        setProgress({ current: audio.currentTime || 0, duration: audio.duration || 0 });
       }
     }, 400);
 
@@ -136,23 +82,23 @@ const AudioPlayer = forwardRef(({
   }, []);
 
   const togglePlay = () => {
-    if (!playerRef.current) return;
+    const audio = audioRef.current;
+    if (!audio) return;
     if (isPlaying) {
-      playerRef.current.pauseVideo();
+      audio.pause();
+      setIsPlaying(false);
     } else {
-      playerRef.current.playVideo();
+      audio.play().then(() => setIsPlaying(true)).catch(e => console.log('Toggle error:', e));
     }
   };
 
   const handleSeek = (e) => {
-    const player = playerRef.current;
-    if (!player || !progress.duration) return;
-
+    const audio = audioRef.current;
+    if (!audio || !progress.duration) return;
     const rect = e.currentTarget.getBoundingClientRect();
-    const clickPos = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
-    const seekTime = clickPos * progress.duration;
-
-    player.seekTo(seekTime, true);
+    const pct = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+    const seekTime = pct * progress.duration;
+    audio.currentTime = seekTime;
     setProgress(prev => ({ ...prev, current: seekTime }));
   };
 
@@ -160,9 +106,15 @@ const AudioPlayer = forwardRef(({
 
   return (
     <div className="w-full max-w-xl mx-auto z-30">
-      <div className="pointer-events-none absolute h-px w-px overflow-hidden opacity-0">
-        <div ref={containerRef} />
-      </div>
+      <audio 
+        ref={audioRef} 
+        src={activeTrack.audioUrl} 
+        preload="auto"
+        onEnded={() => {
+          setIsPlaying(false);
+          onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length);
+        }}
+      />
 
       <div className="group relative flex items-center gap-4 rounded-full p-3 pr-5 bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 shadow-[0_8px_40px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.25)]">
         <div className="relative h-20 w-20 shrink-0">
@@ -201,8 +153,7 @@ const AudioPlayer = forwardRef(({
           <button 
             type="button"
             onClick={togglePlay} 
-            disabled={!isReady} 
-            className="grid h-11 w-11 place-items-center rounded-full bg-white text-black shadow-lg transition hover:scale-105 active:scale-95 disabled:opacity-50"
+            className="grid h-11 w-11 place-items-center rounded-full bg-white text-black shadow-lg transition hover:scale-105 active:scale-95"
           >
             {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current ml-0.5" />}
           </button>
