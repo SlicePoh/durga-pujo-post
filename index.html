@@ -32,13 +32,10 @@
     }
   </script>
 
-  <!-- React 19 & Babel Standalone CDN -->
+  <!-- React 18 & Babel Standalone CDN -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-  <!-- Lucide Icons CDN -->
-  <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
     .glass-panel {
@@ -347,7 +344,6 @@
           gain.connect(ctx.destination);
           whiteNoise.start();
 
-          // Metal latch click
           setTimeout(() => {
             const osc = ctx.createOscillator();
             const clickGain = ctx.createGain();
@@ -408,8 +404,7 @@
             }`}
             title="Trigger Omni Sliding Door Sound"
           >
-            <i data-lucide="volume-2" className="w-4 h-4 text-amber-400"></i>
-            <span className="hidden sm:inline">Sliding Door</span>
+            <span>Sliding Door</span>
             <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-mono">Kachak!</span>
           </button>
 
@@ -420,8 +415,7 @@
             }`}
             title="Trigger Omni Pressure Horn"
           >
-            <i data-lucide="radio" className="w-4 h-4 text-emerald-400"></i>
-            <span className="hidden sm:inline">Van Horn</span>
+            <span>Van Horn</span>
             <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-mono">Pip-Pip!</span>
           </button>
         </div>
@@ -695,7 +689,17 @@
 
       const [musicVolume, setMusicVolume] = useState(0.0);
       const [isCrossfading, setIsCrossfading] = useState(false);
+      const [hasInteracted, setHasInteracted] = useState(false);
       const videoRef = useRef(null);
+
+      // Try autoplaying muted video immediately on mount so background video works out of the box
+      useEffect(() => {
+        const video = videoRef.current;
+        if (video) {
+          video.muted = true;
+          video.play().catch(err => console.log("Muted autoplay notice:", err));
+        }
+      }, []);
 
       // 8-Second Audio Crossfade Mechanics
       useEffect(() => {
@@ -705,16 +709,16 @@
         const handleTimeUpdate = () => {
           const t = video.currentTime;
           if (t < 6.0) {
-            video.volume = 1.0;
+            if (!video.muted) video.volume = 1.0;
             setMusicVolume(0.0);
             setIsCrossfading(false);
           } else if (t >= 6.0 && t <= 8.5) {
             const prog = (t - 6.0) / 2.5;
-            video.volume = Math.max(0, 1 - prog);
+            if (!video.muted) video.volume = Math.max(0, 1 - prog);
             setMusicVolume(Math.min(0.85, prog * 0.85));
             setIsCrossfading(true);
           } else {
-            video.volume = 0.0;
+            if (!video.muted) video.volume = 0.0;
             setMusicVolume(0.85);
             setIsCrossfading(false);
           }
@@ -724,13 +728,15 @@
         return () => video.removeEventListener('timeupdate', handleTimeUpdate);
       }, []);
 
-      const replayIntro = () => {
+      const startRideWithAudio = () => {
+        setHasInteracted(true);
         const video = videoRef.current;
         if (video) {
+          video.muted = false;
           video.currentTime = 0;
           video.volume = 1.0;
           setMusicVolume(0.0);
-          video.play().catch(e => console.log(e));
+          video.play().catch(e => console.log('Unmute play error:', e));
         }
       };
 
@@ -742,19 +748,24 @@
       };
 
       return (
-        <main className="relative flex min-h-dvh flex-1 flex-col items-center justify-between overflow-hidden bg-slate-950">
+        <main 
+          onClick={() => { if (!hasInteracted) startRideWithAudio(); }} 
+          className="relative flex min-h-dvh flex-1 flex-col items-center justify-between overflow-hidden bg-slate-950 cursor-pointer select-none"
+        >
           
           {/* Ambient Video Background */}
           <div className="fixed inset-0 -z-10 bg-black overflow-hidden">
             <video
               ref={videoRef}
-              src="/musics.mp4"
+              src="musics.mp4"
               autoPlay
               playsInline
+              muted
               loop
-              className="h-full w-full object-cover opacity-85"
+              className="h-full w-full object-cover opacity-90 transition-opacity duration-700"
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-slate-950/70 via-transparent to-slate-950/90" />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(2,6,23,0.65)_100%)]" />
           </div>
 
           <ISTClock />
@@ -770,16 +781,16 @@
           </div>
 
           {/* Hero Branding */}
-          <div className="mt-[15vh] flex flex-col items-center px-6 text-center z-20">
-            <div className="glass-pill px-4 py-1.5 rounded-full mb-3 flex items-center gap-2 text-xs font-mono text-amber-300 border border-amber-400/30">
+          <div className="mt-[14vh] flex flex-col items-center px-6 text-center z-20">
+            <div className="glass-pill px-4 py-1.5 rounded-full mb-3 flex items-center gap-2 text-xs font-mono text-amber-300 border border-amber-400/30 shadow-lg">
               ✨ 7:15 AM SCHOOL COMMUTE • 2008–2012 ERA
             </div>
 
-            <h1 className="text-5xl sm:text-7xl font-extrabold tracking-tight text-white drop-shadow-lg uppercase">
+            <h1 className="text-5xl sm:text-7xl font-extrabold tracking-tight text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.9)] uppercase">
               OMNI<span className="text-amber-400 font-mono">VAN</span>
             </h1>
 
-            <p className="mt-2 text-sm sm:text-base text-white/80 font-medium max-w-md">
+            <p className="mt-2 text-sm sm:text-base text-white/90 font-medium max-w-md drop-shadow-md">
               Sliding door <span className="text-amber-300 font-mono">Kachak!</span>, Nokia 5310 tunes & 2008–2012 school commute hits.
             </p>
 
@@ -790,15 +801,24 @@
                 </div>
               )}
 
-              <button onClick={replayIntro} className="glass-pill px-4 py-2 rounded-full text-xs font-semibold text-white hover:bg-amber-500/20 hover:text-amber-300 border border-white/20 transition active:scale-95 shadow-lg">
-                Re-live 7:15 AM Van Arrival 🚍
+              <button 
+                onClick={(e) => { e.stopPropagation(); startRideWithAudio(); }} 
+                className="glass-pill px-5 py-2.5 rounded-full text-xs font-bold text-slate-950 bg-amber-400 hover:bg-amber-300 border border-amber-300 transition active:scale-95 shadow-xl flex items-center gap-2"
+              >
+                <span>Re-live 7:15 AM Van Arrival 🚍</span>
               </button>
             </div>
+
+            {!hasInteracted && (
+              <p className="mt-3 text-xs text-amber-300/80 animate-pulse font-mono">
+                👆 Tap anywhere on screen to enable van morning audio dialogue!
+              </p>
+            )}
           </div>
 
           <NostalgiaSFX />
 
-          <div className="mb-[6vh] w-full px-4 z-30">
+          <div className="mb-[5vh] w-full px-4 z-30">
             <AudioPlayer
               currentTrackIndex={currentTrackIndex}
               onTrackChange={setCurrentTrackIndex}
