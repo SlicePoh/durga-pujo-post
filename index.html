@@ -437,24 +437,30 @@
       );
     }
 
-    // --- High-Reliability Direct HTML5 Audio Player Component ---
+    // --- Equal-Power Pre-Buffered Direct HTML5 Audio Player ---
     const AudioPlayer = forwardRef(({ currentTrackIndex, onTrackChange, onOpenPlaylist, musicVolume, customTrackId }, ref) => {
       const [isPlaying, setIsPlaying] = useState(false);
       const [progress, setProgress] = useState({ current: 0, duration: 0 });
       const audioRef = useRef(null);
 
       const activeTrack = customTrackId 
-        ? { title: "Custom Stream", artist: "YouTube Track", movie: "User Selection", cover: OMNI_PLAYLIST[0].cover, audioUrl: null }
+        ? { title: "Custom Stream", artist: "YouTube Track", movie: "User Selection", cover: OMNI_PLAYLIST[0].cover, audioUrl: OMNI_PLAYLIST[0].audioUrl }
         : OMNI_PLAYLIST[currentTrackIndex] || OMNI_PLAYLIST[0];
 
-      // Imperative handle to unlock audio and play Aahun Aahun from 0:00
+      // Pre-buffer and unlock audio in user gesture
       useImperativeHandle(ref, () => ({
         unlockAudio: () => {
           const audio = audioRef.current;
           if (audio) {
             audio.currentTime = 0;
             audio.volume = 0.0;
-            audio.pause();
+            const promise = audio.play();
+            if (promise !== undefined) {
+              promise.then(() => {
+                audio.pause();
+                audio.currentTime = 0;
+              }).catch(e => console.log('Unlock notice:', e));
+            }
           }
         },
         playFromStart: () => {
@@ -478,15 +484,18 @@
         audio.currentTime = 0;
         audio.volume = Math.max(0, Math.min(1, musicVolume));
         if (isPlaying) {
-          audio.play().catch(err => console.log("Track change play error:", err));
+          audio.play().catch(err => console.log("Track change error:", err));
         }
       }, [currentTrackIndex]);
 
-      // Synchronize Volume smoothly during crossfade
+      // Synchronize Volume smoothly
       useEffect(() => {
         const audio = audioRef.current;
         if (audio) {
           audio.volume = Math.max(0, Math.min(1, musicVolume));
+          if (musicVolume > 0.01 && audio.paused) {
+            audio.play().then(() => setIsPlaying(true)).catch(e => console.log("Auto sync play:", e));
+          }
         }
       }, [musicVolume]);
 
@@ -526,7 +535,7 @@
 
       return (
         <div className="w-full max-w-xl mx-auto">
-          {/* HTML5 Audio Element for Direct 100% Reliable Playback */}
+          {/* Direct HTML5 Audio Element */}
           <audio 
             ref={audioRef} 
             src={activeTrack.audioUrl} 
@@ -643,7 +652,7 @@
         }
       }, []);
 
-      // Synchronized 8s Video Dialogue & Aahun Aahun Music Start
+      // Equal-Power Cinematic Audio Crossfade Engine
       useEffect(() => {
         const video = videoRef.current;
         if (!video) return;
@@ -654,16 +663,17 @@
 
           // Only advance intro voice crossfade if video is UNMUTED
           if (!video.muted && !introFinished) {
-            if (t < 6.0) {
+            if (t < 5.5) {
               video.volume = 1.0;
               setMusicVolume(0.0);
             } 
-            else if (t >= 6.0 && t <= 8.5) {
-              const prog = (t - 6.0) / 2.5;
-              video.volume = Math.max(0, 1 - prog);
-              setMusicVolume(Math.min(0.85, prog * 0.85));
+            else if (t >= 5.5 && t <= 8.5) {
+              // Equal-Power Cosine / Sine Crossfade Curve (Super smooth audio blending!)
+              const prog = (t - 5.5) / 3.0; // 0.0 -> 1.0
+              video.volume = Math.max(0, Math.cos(prog * (Math.PI / 2)));
+              setMusicVolume(Math.sin(prog * (Math.PI / 2)) * 0.85);
 
-              // START AAHUN AAHUN MUSIC EXACTLY AT SECOND 6 (AS DIALOGUE FADES OUT)
+              // START AAHUN AAHUN MUSIC AT SECOND 5.5 (PRE-TRIGGER FOR 0ms LAG)
               if (!hasTriggeredMusic) {
                 setHasTriggeredMusic(true);
                 if (audioPlayerRef.current && typeof audioPlayerRef.current.playFromStart === 'function') {
@@ -689,7 +699,7 @@
         return () => video.removeEventListener('timeupdate', handleTimeUpdate);
       }, [introFinished, hasTriggeredMusic]);
 
-      // Unmute Video & Start 8s Van Arrival Voice Experience
+      // Unmute Video & Start Automatic 8s Van Arrival Experience
       const triggerUnmuteAndStartVoice = useCallback(() => {
         const video = videoRef.current;
         if (video) {
@@ -701,7 +711,7 @@
           video.volume = 1.0;
           setMusicVolume(0.0);
 
-          // Unlock HTML5 Audio in the exact same click event
+          // Unlock audio element in user interaction
           if (audioPlayerRef.current && typeof audioPlayerRef.current.unlockAudio === 'function') {
             audioPlayerRef.current.unlockAudio();
           }

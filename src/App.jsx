@@ -6,7 +6,6 @@ import PlaylistDrawer from './components/PlaylistDrawer';
 import { SPOTIFY_PLAYLIST_URL, YOUTUBE_MUSIC_PLAYLIST_URL, OMNI_PLAYLIST } from './data/playlist';
 
 export default function App() {
-  // Pin active track in localStorage
   const [currentTrackIndex, setCurrentTrackIndex] = useState(() => {
     const saved = localStorage.getItem('omni_pinned_track_index');
     return saved !== null ? parseInt(saved, 10) : 0;
@@ -18,28 +17,27 @@ export default function App() {
   const [musicVolume, setMusicVolume] = useState(0.0);
   const [introFinished, setIntroFinished] = useState(false);
   const [isVideoMuted, setIsVideoMuted] = useState(true);
+  const [hasTriggeredMusic, setHasTriggeredMusic] = useState(false);
+
   const videoRef = useRef(null);
+  const audioPlayerRef = useRef(null);
 
   const handleSetTrack = (idx) => {
     setCurrentTrackIndex(idx);
     localStorage.setItem('omni_pinned_track_index', idx);
   };
 
-  // Instant Autoplay Muted Video on Mount
+  // Muted Autoplay on Mount
   useEffect(() => {
     const video = videoRef.current;
     if (video) {
       video.muted = true;
       setIsVideoMuted(true);
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(err => console.log("Muted autoplay notice:", err));
-      }
+      video.play().catch(err => console.log("Muted autoplay notice:", err));
     }
   }, []);
 
-  // Intro Audio Crossfade & Seamless Last 5 Seconds Video Vibe Loop
-  // CRITICAL FIX: Intro countdown ONLY runs when video is UNMUTED!
+  // Equal-Power Cinematic Audio Crossfade Engine
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -50,14 +48,23 @@ export default function App() {
 
       // Only advance intro voice crossfade if video is UNMUTED
       if (!video.muted && !introFinished) {
-        if (t < 6.0) {
+        if (t < 5.5) {
           video.volume = 1.0;
           setMusicVolume(0.0);
         } 
-        else if (t >= 6.0 && t <= 8.5) {
-          const prog = (t - 6.0) / 2.5;
-          video.volume = Math.max(0, 1 - prog);
-          setMusicVolume(Math.min(0.85, prog * 0.85));
+        else if (t >= 5.5 && t <= 8.5) {
+          // Equal-Power Cosine / Sine Crossfade Curve (Super smooth audio blending!)
+          const prog = (t - 5.5) / 3.0; // 0.0 -> 1.0
+          video.volume = Math.max(0, Math.cos(prog * (Math.PI / 2)));
+          setMusicVolume(Math.sin(prog * (Math.PI / 2)) * 0.85);
+
+          // START AAHUN AAHUN MUSIC AT SECOND 5.5 (PRE-TRIGGER FOR 0ms LAG)
+          if (!hasTriggeredMusic) {
+            setHasTriggeredMusic(true);
+            if (audioPlayerRef.current && typeof audioPlayerRef.current.playFromStart === 'function') {
+              audioPlayerRef.current.playFromStart();
+            }
+          }
         } 
         else if (t > 8.5) {
           video.volume = 0.0;
@@ -75,18 +82,25 @@ export default function App() {
 
     video.addEventListener('timeupdate', handleTimeUpdate);
     return () => video.removeEventListener('timeupdate', handleTimeUpdate);
-  }, [introFinished]);
+  }, [introFinished, hasTriggeredMusic]);
 
-  // Unmute Video & Start 8s Van Arrival Voice Experience
+  // Unmute Video & Start Automatic 8s Van Arrival Experience
   const triggerUnmuteAndStartVoice = useCallback(() => {
     const video = videoRef.current;
     if (video) {
       video.muted = false;
       setIsVideoMuted(false);
       setIntroFinished(false);
+      setHasTriggeredMusic(false);
       video.currentTime = 0;
       video.volume = 1.0;
       setMusicVolume(0.0);
+
+      // Unlock audio element in user interaction
+      if (audioPlayerRef.current && typeof audioPlayerRef.current.unlockAudio === 'function') {
+        audioPlayerRef.current.unlockAudio();
+      }
+
       video.play().catch(e => console.log('Unmute play:', e));
     }
   }, []);
@@ -180,6 +194,7 @@ export default function App() {
 
         {/* Bottom Music Player Pill */}
         <AudioPlayer
+          ref={audioPlayerRef}
           currentTrackIndex={currentTrackIndex}
           onTrackChange={handleSetTrack}
           onOpenPlaylist={() => setIsPlaylistOpen(true)}
