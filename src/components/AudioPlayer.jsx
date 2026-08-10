@@ -33,13 +33,19 @@ const AudioPlayer = forwardRef(({
       }
     : OMNI_PLAYLIST[currentTrackIndex] || OMNI_PLAYLIST[0];
 
+  // Guaranteed Initial Start for Aahun Aahun from 0:00 at 20% Volume
   useImperativeHandle(ref, () => ({
     startPlayback: () => {
       const aud = audioRef.current;
       if (aud) {
+        aud.src = activeTrack.audioUrl;
         aud.currentTime = 0;
         aud.volume = Math.max(0, Math.min(1, musicVolume));
-        aud.play().then(() => setIsPlaying(true)).catch(err => console.log("Audio start error:", err));
+        aud.load();
+        const playPromise = aud.play();
+        if (playPromise !== undefined) {
+          playPromise.then(() => setIsPlaying(true)).catch(err => console.log("Audio start error:", err));
+        }
       }
     }
   }));
