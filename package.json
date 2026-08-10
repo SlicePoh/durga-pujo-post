@@ -1,0 +1,22 @@
+{
+  "name": "omni-van-nostalgia",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "PATH=/opt/homebrew/bin:$PATH vite",
+    "build": "PATH=/opt/homebrew/bin:$PATH vite build",
+    "preview": "PATH=/opt/homebrew/bin:$PATH vite preview"
+  },
+  "dependencies": {
+    "lucide-react": "^0.475.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.0.0",
+    "vite": "^6.0.0"
+  }
+}

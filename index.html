@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full antialiased dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OmniVan — 2008-2012 School Commute Bangers</title>
+  <meta name="description" content="School OmniVan — 2008-2012 bangers that played on the morning school ride. Sliding door kachak, water bottle straps & Nokia XpressMusic vibes." />
+  
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="OmniVan — 2008-2012 School Commute Nostalgia" />
+  <meta property="og:description" content="Relive the 7:15 AM school van ride with 2008-2012 iconic Bollywood & Indie hits." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Outfit', 'sans-serif'],
+            mono: ['Space Grotesk', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <!-- React 19 & Babel Standalone CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .glass-pill {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    }
+
+    .glass-pill:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    @keyframes spinSlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .animate-spin-slow {
+      animation: spinSlow 8s linear infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .animate-blink {
+      animation: blink 1s step-end infinite;
+    }
+
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(245, 158, 11, 0.5);
+    }
+  </style>
+</head>
+<body class="min-h-full flex flex-col bg-slate-950 text-slate-100 font-sans selection:bg-amber-500 selection:text-black overflow-x-hidden">
+
+  <div id="root" class="min-h-dvh flex flex-col"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useCallback } = React;
+
+    // 2008-2012 Playlist Data
+    const OMNI_PLAYLIST = [
+      {
+        id: "give-me-some-sunshine",
+        youtubeId: "Vd9QvvdQG9E",
+        title: "Give Me Some Sunshine",
+        artist: "Suraj Jagan & Sharman Joshi",
+        movie: "3 Idiots (2009)",
+        year: "2009",
+        tagline: "School bag extra heavy, physics test today ☀️",
+        cover: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=600&auto=format&fit=crop"
+      },
+      {
+        id: "kabhi-kabhi-aditi",
+        youtubeId: "NDgT16sZ1F8",
+        title: "Kabhi Kabhi Aditi Zindagi",
+        artist: "Rashid Ali",
+        movie: "Jaane Tu... Ya Jaane Na (2008)",
+        year: "2008",
+        tagline: "Nokia 5310 XpressMusic playing on speaker 📱",
+        cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600&auto=format&fit=crop"
+      },
+      {
+        id: "iktara",
+        youtubeId: "fSS_R91Nimw",
+        title: "Iktara",
+        artist: "Kavita Seth & Amitabh Bhattacharya",
+        movie: "Wake Up Sid (2009)",
+        year: "2009",
+        tagline: "Winter morning fog sticking to the Omni window glass 🌫️",
+        cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop"
+      },
+      {
+        id: "tu-jaane-na",
+        youtubeId: "P8PWN1OmZOA",
+        title: "Tu Jaane Na",
+        artist: "Atif Aslam",
+        movie: "Ajab Prem Ki Ghazab Kahani (2009)",
+        year: "2009",
+        tagline: "Secretly humming while sitting in the last seat 🎒",
+        cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=600&auto=format&fit=crop"
+      },
+      {
+        id: "socha-hai",
+        youtubeId: "xG0r6q4Y_B8",
+        title: "Socha Hai",
+        artist: "Farhan Akhtar",
+        movie: "Rock On!! (2008)",
+        year: "2008",
+        tagline: "Tapping fingers on the aluminum van rail 🎸",
+        cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?q=80&w=600&auto=format&fit=crop"
+      },
+      {
+        id: "all-izz-well",
+        youtubeId: "S-LltgOtNTg",
+        title: "All Izz Well",
+        artist: "Sonu Nigam, Shaan & Swanand Kirkire",
+        movie: "3 Idiots (2009)",
+        year: "2009",
+        tagline: "Homework isn't done but All Izz Well anyway! ✏️",
+        cover: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=600&auto=format&fit=crop"
+      },
+      {
+        id: "masakali",
+        youtubeId: "e-k76oWfUCo",
+        title: "Masakali",
+        artist: "Mohit Chauhan & A.R. Rahman",
+        movie: "Delhi-6 (2009)",
+        year: "2009",
+        tagline: "Radio Mirchi 98.3 FM morning countdown 📻",
+        cover: "https://images.unsplash.com/photo-1487180144351-b8472da7d491?q=80&w=600&auto=format&fit=crop"
+      },
+      {
+        id: "tum-hi-ho-bandhu",
+        youtubeId: "z3U6_7w3e-Q",
+        title: "Tum Hi Ho Bandhu",
+        artist: "Neeraj Shridhar & Kavita Seth",
+        movie: "Cocktail (2012)",
+        year: "2012",
+        tagline: "Sharing lunchboxes before period 1 even starts 🥪",
+        cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=600&auto=format&fit=crop"
+      },
+      {
+        id: "pani-da-rang",
+        youtubeId: "n_s_QYmJ8U4",
+        title: "Pani Da Rang",
+        artist: "Ayushmann Khurrana",
+        movie: "Vicky Donor (2012)",
+        year: "2012",
+        tagline: "Raindrops sliding down the blue Omni door 🌧️",
+        cover: "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop"
+      },
+      {
+        id: "pee-loon",
+        youtubeId: "0G6C8QfFq_M",
+        title: "Pee Loon",
+        artist: "Mohit Chauhan",
+        movie: "Once Upon a Time in Mumbaai (2010)",
+        year: "2010",
+        tagline: "93.5 Red FM Superhit Mornings with RJ 🎙️",
+        cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop"
+      },
+      {
+        id: "emptiness",
+        youtubeId: "Y-J8a46yL6c",
+        title: "Emptiness (Tune Mere Jaana)",
+        artist: "Gajendra Verma",
+        movie: "Indie Pop Hit (2011)",
+        year: "2011",
+        tagline: "Bluetooth sharing over Sony Ericsson phone 🎶",
+        cover: "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=600&auto=format&fit=crop"
+      },
+      {
+        id: "sadda-haq",
+        youtubeId: "p9DQINH_X60",
+        title: "Sadda Haq",
+        artist: "Mohit Chauhan & A.R. Rahman",
+        movie: "Rockstar (2011)",
+        year: "2011",
+        tagline: "Headbanging in the back seat before assembly 🤘",
+        cover: "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=600&auto=format&fit=crop"
+      }
+    ];
+
+    const SPOTIFY_PLAYLIST_URL = "https://open.spotify.com/playlist/37i9dQZF1DXaqRM6q2e37I";
+    const YOUTUBE_MUSIC_PLAYLIST_URL = "https://music.youtube.com/playlist?list=PLTJ1PnzCWyFw";
+
+    function formatTime(seconds) {
+      if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // --- IST Clock Widget ---
+    function ISTClock() {
+      const [timeState, setTimeState] = useState(null);
+
+      useEffect(() => {
+        const formatter = new Intl.DateTimeFormat('en-IN', {
+          timeZone: 'Asia/Kolkata',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        });
+
+        const updateTime = () => {
+          const parts = formatter.formatToParts(new Date());
+          const hour = parts.find(p => p.type === 'hour')?.value || '7';
+          const minute = parts.find(p => p.type === 'minute')?.value || '15';
+          const period = parts.find(p => p.type === 'dayPeriod')?.value?.toUpperCase() || 'AM';
+          setTimeState({ hour, minute, period });
+        };
+
+        updateTime();
+        const interval = setInterval(updateTime, 1000);
+        return () => clearInterval(interval);
+      }, []);
+
+      return (
+        <div className="fixed left-5 top-5 z-30 flex items-center gap-3">
+          <div className="glass-pill px-3.5 py-1.5 rounded-full flex items-center gap-2 text-sm font-medium text-white shadow-lg border border-white/20">
+            <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+            {timeState ? (
+              <div className="flex items-center font-mono tabular-nums">
+                <span className="font-semibold">{timeState.hour}</span>
+                <span className="animate-blink mx-0.5 text-amber-400 font-bold">:</span>
+                <span className="font-semibold">{timeState.minute}</span>
+                <span className="ml-1.5 text-xs text-amber-200/80 uppercase tracking-wider">{timeState.period} IST</span>
+              </div>
+            ) : (
+              <span className="text-white/60 text-xs">7:15 AM IST</span>
+            )}
+          </div>
+          <div className="hidden md:inline-flex glass-pill px-3 py-1.5 rounded-full text-xs text-amber-200/90 font-medium tracking-wide">
+            🚍 2008–2012 School Commute
+          </div>
+        </div>
+      );
+    }
+
+    // --- Live Passengers Counter Widget ---
+    function LivePassengersCounter() {
+      const [passengerCount, setPassengerCount] = useState(8);
+
+      useEffect(() => {
+        let timeoutId;
+        const updateCount = () => {
+          setPassengerCount(prev => {
+            const delta = Math.random() < (prev < 10 ? 0.6 : 0.4) ? 1 : -1;
+            const step = delta * (1 + Math.floor(Math.random() * 2));
+            return Math.max(6, Math.min(14, prev + step));
+          });
+          timeoutId = setTimeout(updateCount, 3000 + Math.random() * 4000);
+        };
+        timeoutId = setTimeout(updateCount, 3000);
+        return () => clearTimeout(timeoutId);
+      }, []);
+
+      return (
+        <div className="fixed left-1/2 top-5 z-30 -translate-x-1/2 glass-pill px-4 py-1.5 rounded-full inline-flex items-center gap-2.5 text-sm font-medium text-white shadow-xl border border-white/20">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.9)]"></span>
+          </span>
+          <span className="font-semibold tabular-nums text-emerald-300">{passengerCount}</span>
+          <span className="text-white/80 text-xs font-normal">kids in van on board</span>
+        </div>
+      );
+    }
+
+    // --- Nostalgia Sound Effects Synthesizer ---
+    function NostalgiaSFX() {
+      const [activeEffect, setActiveEffect] = useState(null);
+
+      const playDoorSFX = () => {
+        try {
+          setActiveEffect('door');
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          
+          const bufferSize = ctx.sampleRate * 0.35;
+          const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+          const output = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.12));
+          }
+
+          const whiteNoise = ctx.createBufferSource();
+          whiteNoise.buffer = buffer;
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'bandpass';
+          filter.frequency.setValueAtTime(750, ctx.currentTime);
+
+          const gain = ctx.createGain();
+          gain.gain.setValueAtTime(0.7, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+
+          whiteNoise.connect(filter);
+          filter.connect(gain);
+          gain.connect(ctx.destination);
+          whiteNoise.start();
+
+          // Metal latch click
+          setTimeout(() => {
+            const osc = ctx.createOscillator();
+            const clickGain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(150, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(35, ctx.currentTime + 0.1);
+            clickGain.gain.setValueAtTime(0.9, ctx.currentTime);
+            clickGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+            osc.connect(clickGain);
+            clickGain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.1);
+          }, 140);
+
+          setTimeout(() => setActiveEffect(null), 500);
+        } catch (e) {
+          setActiveEffect(null);
+        }
+      };
+
+      const playHornSFX = () => {
+        try {
+          setActiveEffect('horn');
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const osc1 = ctx.createOscillator();
+          const osc2 = ctx.createOscillator();
+          const gain = ctx.createGain();
+
+          osc1.type = 'sawtooth';
+          osc2.type = 'sawtooth';
+          osc1.frequency.setValueAtTime(370, ctx.currentTime);
+          osc2.frequency.setValueAtTime(435, ctx.currentTime);
+
+          gain.gain.setValueAtTime(0.25, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+
+          osc1.connect(gain);
+          osc2.connect(gain);
+          gain.connect(ctx.destination);
+
+          osc1.start();
+          osc2.start();
+          osc1.stop(ctx.currentTime + 0.4);
+          osc2.stop(ctx.currentTime + 0.4);
+
+          setTimeout(() => setActiveEffect(null), 500);
+        } catch (e) {
+          setActiveEffect(null);
+        }
+      };
+
+      return (
+        <div className="fixed right-5 bottom-28 z-30 flex flex-col gap-2">
+          <button
+            onClick={playDoorSFX}
+            className={`glass-pill px-3 py-2 rounded-full flex items-center gap-2 text-xs font-medium text-amber-200 shadow-lg transition-all active:scale-95 ${
+              activeEffect === 'door' ? 'bg-amber-500/30 ring-2 ring-amber-400 scale-105' : 'hover:bg-white/15'
+            }`}
+            title="Trigger Omni Sliding Door Sound"
+          >
+            <i data-lucide="volume-2" className="w-4 h-4 text-amber-400"></i>
+            <span className="hidden sm:inline">Sliding Door</span>
+            <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-mono">Kachak!</span>
+          </button>
+
+          <button
+            onClick={playHornSFX}
+            className={`glass-pill px-3 py-2 rounded-full flex items-center gap-2 text-xs font-medium text-emerald-200 shadow-lg transition-all active:scale-95 ${
+              activeEffect === 'horn' ? 'bg-emerald-500/30 ring-2 ring-emerald-400 scale-105' : 'hover:bg-white/15'
+            }`}
+            title="Trigger Omni Pressure Horn"
+          >
+            <i data-lucide="radio" className="w-4 h-4 text-emerald-400"></i>
+            <span className="hidden sm:inline">Van Horn</span>
+            <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-mono">Pip-Pip!</span>
+          </button>
+        </div>
+      );
+    }
+
+    // --- Playlist Drawer Modal ---
+    function PlaylistDrawer({ isOpen, onClose, currentTrackIndex, onSelectTrack, onCustomYoutubeUrl }) {
+      const [searchTerm, setSearchTerm] = useState('');
+      const [customInput, setCustomInput] = useState('');
+
+      if (!isOpen) return null;
+
+      const filtered = OMNI_PLAYLIST.filter(t =>
+        t.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        t.artist.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        t.movie.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+      const handleAddCustom = (e) => {
+        e.preventDefault();
+        if (!customInput.trim()) return;
+        onCustomYoutubeUrl(customInput.trim());
+        setCustomInput('');
+        onClose();
+      };
+
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+          <div className="relative w-full max-w-2xl max-h-[85vh] glass-panel rounded-3xl p-6 flex flex-col overflow-hidden shadow-2xl border border-white/20">
+            
+            <div className="flex items-center justify-between pb-4 border-b border-white/10">
+              <div>
+                <h2 className="text-lg font-bold text-white tracking-wide">2008–2012 School Van Playlist</h2>
+                <p className="text-xs text-white/60">Curated bangers from Nokia XpressMusic & Radio Mirchi era</p>
+              </div>
+              <button onClick={onClose} className="p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition">
+                ✕
+              </button>
+            </div>
+
+            <div className="flex items-center gap-3 py-3">
+              <a href={SPOTIFY_PLAYLIST_URL} target="_blank" rel="noreferrer" className="glass-pill flex-1 py-2 px-3 rounded-xl flex items-center justify-center gap-2 text-xs font-medium text-emerald-300 hover:bg-emerald-500/20 transition">
+                Spotify Playlist ↗
+              </a>
+              <a href={YOUTUBE_MUSIC_PLAYLIST_URL} target="_blank" rel="noreferrer" className="glass-pill flex-1 py-2 px-3 rounded-xl flex items-center justify-center gap-2 text-xs font-medium text-red-300 hover:bg-red-500/20 transition">
+                YT Music Playlist ↗
+              </a>
+            </div>
+
+            <div className="mb-3">
+              <input 
+                type="text"
+                placeholder="Search 2008-2012 song, artist, movie..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                className="w-full px-4 py-2 rounded-xl bg-white/5 border border-white/15 text-sm text-white placeholder-white/40 focus:outline-none focus:border-amber-400/60"
+              />
+            </div>
+
+            <form onSubmit={handleAddCustom} className="flex gap-2 mb-4">
+              <input 
+                type="text"
+                placeholder="Paste custom YouTube URL or Video ID..."
+                value={customInput}
+                onChange={e => setCustomInput(e.target.value)}
+                className="flex-1 px-4 py-2 rounded-xl bg-white/5 border border-white/15 text-xs text-white placeholder-white/40 focus:outline-none focus:border-amber-400/60"
+              />
+              <button type="submit" className="px-3 py-2 rounded-xl bg-amber-500 text-slate-950 text-xs font-bold hover:bg-amber-400 transition">
+                Play Song
+              </button>
+            </form>
+
+            <div className="flex-1 overflow-y-auto space-y-2 pr-1">
+              {filtered.map((track) => {
+                const origIndex = OMNI_PLAYLIST.findIndex(t => t.id === track.id);
+                const isPlaying = origIndex === currentTrackIndex;
+
+                return (
+                  <div 
+                    key={track.id}
+                    onClick={() => { onSelectTrack(origIndex); onClose(); }}
+                    className={`group flex items-center gap-3.5 p-2.5 rounded-2xl cursor-pointer transition-all ${
+                      isPlaying ? 'bg-amber-500/20 border border-amber-400/50 shadow-md' : 'bg-white/5 border border-white/10 hover:bg-white/10'
+                    }`}
+                  >
+                    <img src={track.cover} alt={track.title} className="w-12 h-12 rounded-xl object-cover shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm font-semibold truncate ${isPlaying ? 'text-amber-300' : 'text-white'}`}>
+                        {track.title}
+                      </p>
+                      <p className="text-xs text-white/60 truncate">
+                        {track.artist} • <span className="text-amber-200/80">{track.movie}</span>
+                      </p>
+                    </div>
+                    <span className="text-xs px-2 py-1 rounded bg-white/10 text-white/80">Play</span>
+                  </div>
+                );
+              })}
+            </div>
+
+          </div>
+        </div>
+      );
+    }
+
+    // --- Glassmorphic Cassette Audio Player ---
+    let ytPromise = null;
+
+    function AudioPlayer({ currentTrackIndex, onTrackChange, onOpenPlaylist, musicVolume, customTrackId }) {
+      const [isPlaying, setIsPlaying] = useState(false);
+      const [isReady, setIsReady] = useState(false);
+      const [progress, setProgress] = useState({ current: 0, duration: 0 });
+      const containerRef = useRef(null);
+      const playerRef = useRef(null);
+
+      const activeTrack = customTrackId 
+        ? { title: "Custom Stream", artist: "YouTube Track", movie: "User Selection", cover: OMNI_PLAYLIST[0].cover, youtubeId: customTrackId }
+        : OMNI_PLAYLIST[currentTrackIndex] || OMNI_PLAYLIST[0];
+
+      useEffect(() => {
+        let mounted = true;
+        if (!ytPromise) {
+          ytPromise = new Promise(resolve => {
+            if (window.YT && window.YT.Player) {
+              resolve(window.YT);
+            } else {
+              const prev = window.onYouTubeIframeAPIReady;
+              window.onYouTubeIframeAPIReady = () => {
+                if (prev) prev();
+                resolve(window.YT);
+              };
+              const tag = document.createElement('script');
+              tag.src = 'https://www.youtube.com/iframe_api';
+              document.head.appendChild(tag);
+            }
+          });
+        }
+
+        ytPromise.then((YT) => {
+          if (!mounted || !containerRef.current || playerRef.current) return;
+          playerRef.current = new YT.Player(containerRef.current, {
+            videoId: activeTrack.youtubeId,
+            playerVars: { controls: 0, disablekb: 1, playsinline: 1, rel: 0, modestbranding: 1, start: 5 },
+            events: {
+              onReady: (e) => {
+                setIsReady(true);
+                e.target.setVolume(Math.round(musicVolume * 100));
+              },
+              onStateChange: (e) => {
+                if (e.data === YT.PlayerState.PLAYING) setIsPlaying(true);
+                else if (e.data === YT.PlayerState.PAUSED) setIsPlaying(false);
+                else if (e.data === YT.PlayerState.ENDED) {
+                  setIsPlaying(false);
+                  onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length);
+                }
+              }
+            }
+          });
+        });
+
+        return () => { mounted = false; };
+      }, []);
+
+      useEffect(() => {
+        if (playerRef.current && isReady && activeTrack.youtubeId) {
+          playerRef.current.loadVideoById(activeTrack.youtubeId, 5);
+          setIsPlaying(true);
+        }
+      }, [currentTrackIndex, customTrackId, isReady]);
+
+      useEffect(() => {
+        if (playerRef.current && typeof playerRef.current.setVolume === 'function') {
+          playerRef.current.setVolume(Math.round(musicVolume * 100));
+        }
+      }, [musicVolume]);
+
+      useEffect(() => {
+        const interval = setInterval(() => {
+          const p = playerRef.current;
+          if (p && typeof p.getCurrentTime === 'function' && typeof p.getDuration === 'function') {
+            setProgress({ current: p.getCurrentTime() || 0, duration: p.getDuration() || 0 });
+          }
+        }, 400);
+        return () => clearInterval(interval);
+      }, []);
+
+      const togglePlay = () => {
+        if (!playerRef.current) return;
+        if (isPlaying) playerRef.current.pauseVideo();
+        else playerRef.current.playVideo();
+      };
+
+      const handleSeek = (e) => {
+        const p = playerRef.current;
+        if (!p || !progress.duration) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const pct = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+        const seekTime = pct * progress.duration;
+        p.seekTo(seekTime, true);
+        setProgress(prev => ({ ...prev, current: seekTime }));
+      };
+
+      const pct = progress.duration > 0 ? (progress.current / progress.duration) * 100 : 0;
+
+      return (
+        <div className="w-full max-w-xl mx-auto z-30">
+          <div className="pointer-events-none absolute h-px w-px overflow-hidden opacity-0">
+            <div ref={containerRef} />
+          </div>
+
+          <div className="glass-panel rounded-full p-3 pr-6 flex items-center gap-4 border border-white/20 shadow-2xl">
+            {/* Spinning Cassette Vinyl */}
+            <div className="relative h-18 w-18 sm:h-20 sm:w-20 shrink-0">
+              <div className={`h-full w-full rounded-full overflow-hidden shadow-xl ring-2 ring-white/20 ${isPlaying ? 'animate-spin-slow ring-amber-400/50' : 'opacity-90'}`}>
+                <img src={activeTrack.cover} alt={activeTrack.title} className="h-full w-full object-cover" />
+              </div>
+              <div className="pointer-events-none absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-950/80 ring-2 ring-white/50 flex items-center justify-center">
+                <div className="w-1 h-1 rounded-full bg-amber-400"></div>
+              </div>
+            </div>
+
+            {/* Track Info */}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded bg-amber-500/20 text-[10px] font-mono text-amber-300 border border-amber-500/30">2008-2012</span>
+                <p className="truncate text-sm sm:text-base font-bold text-white">{activeTrack.title}</p>
+              </div>
+              <p className="truncate text-xs text-white/70 mt-0.5">{activeTrack.artist} • <span className="text-amber-200/90">{activeTrack.movie}</span></p>
+
+              {/* Progress Slider */}
+              <div className="mt-2">
+                <div onClick={handleSeek} className="group/bar relative h-2 w-full cursor-pointer flex items-center">
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/20">
+                    <div className="h-full rounded-full bg-gradient-to-r from-amber-400 to-amber-200" style={{ width: `${pct}%` }} />
+                  </div>
+                </div>
+                <div className="mt-1 flex items-center justify-between text-[11px] font-mono tabular-nums text-white/60">
+                  <span>{formatTime(progress.current)}</span>
+                  <span>{formatTime(progress.duration)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Controls */}
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button onClick={() => onTrackChange((currentTrackIndex - 1 + OMNI_PLAYLIST.length) % OMNI_PLAYLIST.length)} className="p-2 rounded-full text-white/80 hover:bg-white/15">
+                ◀◀
+              </button>
+              <button onClick={togglePlay} disabled={!isReady} className="h-11 w-11 rounded-full bg-amber-400 text-slate-950 font-bold shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 disabled:opacity-50">
+                {isPlaying ? '❚❚' : '▶'}
+              </button>
+              <button onClick={() => onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length)} className="p-2 rounded-full text-white/80 hover:bg-white/15">
+                ▶▶
+              </button>
+              <button onClick={onOpenPlaylist} className="p-2 rounded-full text-white/80 hover:bg-white/15 ml-1" title="Open Playlist">
+                ≡
+              </button>
+            </div>
+
+          </div>
+        </div>
+      );
+    }
+
+    // --- Main App Root ---
+    function App() {
+      const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+      const [isPlaylistOpen, setIsPlaylistOpen] = useState(false);
+      const [customYoutubeId, setCustomYoutubeId] = useState(null);
+
+      const [musicVolume, setMusicVolume] = useState(0.0);
+      const [isCrossfading, setIsCrossfading] = useState(false);
+      const videoRef = useRef(null);
+
+      // 8-Second Audio Crossfade Mechanics
+      useEffect(() => {
+        const video = videoRef.current;
+        if (!video) return;
+
+        const handleTimeUpdate = () => {
+          const t = video.currentTime;
+          if (t < 6.0) {
+            video.volume = 1.0;
+            setMusicVolume(0.0);
+            setIsCrossfading(false);
+          } else if (t >= 6.0 && t <= 8.5) {
+            const prog = (t - 6.0) / 2.5;
+            video.volume = Math.max(0, 1 - prog);
+            setMusicVolume(Math.min(0.85, prog * 0.85));
+            setIsCrossfading(true);
+          } else {
+            video.volume = 0.0;
+            setMusicVolume(0.85);
+            setIsCrossfading(false);
+          }
+        };
+
+        video.addEventListener('timeupdate', handleTimeUpdate);
+        return () => video.removeEventListener('timeupdate', handleTimeUpdate);
+      }, []);
+
+      const replayIntro = () => {
+        const video = videoRef.current;
+        if (video) {
+          video.currentTime = 0;
+          video.volume = 1.0;
+          setMusicVolume(0.0);
+          video.play().catch(e => console.log(e));
+        }
+      };
+
+      const handleCustomYoutubeUrl = (input) => {
+        let videoId = input;
+        if (input.includes('v=')) videoId = input.split('v=')[1]?.split('&')[0];
+        else if (input.includes('youtu.be/')) videoId = input.split('youtu.be/')[1]?.split('?')[0];
+        if (videoId) setCustomYoutubeId(videoId);
+      };
+
+      return (
+        <main className="relative flex min-h-dvh flex-1 flex-col items-center justify-between overflow-hidden bg-slate-950">
+          
+          {/* Ambient Video Background */}
+          <div className="fixed inset-0 -z-10 bg-black overflow-hidden">
+            <video
+              ref={videoRef}
+              src="/musics.mp4"
+              autoPlay
+              playsInline
+              loop
+              className="h-full w-full object-cover opacity-85"
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-slate-950/70 via-transparent to-slate-950/90" />
+          </div>
+
+          <ISTClock />
+          <LivePassengersCounter />
+
+          <div className="fixed right-5 top-5 z-30 flex items-center gap-2">
+            <a href={SPOTIFY_PLAYLIST_URL} target="_blank" rel="noreferrer" className="glass-pill px-3 py-1.5 rounded-full text-xs font-medium text-white shadow-lg">
+              Spotify
+            </a>
+            <a href={YOUTUBE_MUSIC_PLAYLIST_URL} target="_blank" rel="noreferrer" className="glass-pill px-3 py-1.5 rounded-full text-xs font-medium text-white shadow-lg">
+              YT Music
+            </a>
+          </div>
+
+          {/* Hero Branding */}
+          <div className="mt-[15vh] flex flex-col items-center px-6 text-center z-20">
+            <div className="glass-pill px-4 py-1.5 rounded-full mb-3 flex items-center gap-2 text-xs font-mono text-amber-300 border border-amber-400/30">
+              ✨ 7:15 AM SCHOOL COMMUTE • 2008–2012 ERA
+            </div>
+
+            <h1 className="text-5xl sm:text-7xl font-extrabold tracking-tight text-white drop-shadow-lg uppercase">
+              OMNI<span className="text-amber-400 font-mono">VAN</span>
+            </h1>
+
+            <p className="mt-2 text-sm sm:text-base text-white/80 font-medium max-w-md">
+              Sliding door <span className="text-amber-300 font-mono">Kachak!</span>, Nokia 5310 tunes & 2008–2012 school commute hits.
+            </p>
+
+            <div className="mt-4 flex flex-col sm:flex-row items-center gap-3">
+              {isCrossfading && (
+                <div className="glass-pill px-3.5 py-1.5 rounded-full text-xs text-amber-300 animate-pulse border border-amber-400/40">
+                  🔊 Van ambient audio fading into 2008-2012 music...
+                </div>
+              )}
+
+              <button onClick={replayIntro} className="glass-pill px-4 py-2 rounded-full text-xs font-semibold text-white hover:bg-amber-500/20 hover:text-amber-300 border border-white/20 transition active:scale-95 shadow-lg">
+                Re-live 7:15 AM Van Arrival 🚍
+              </button>
+            </div>
+          </div>
+
+          <NostalgiaSFX />
+
+          <div className="mb-[6vh] w-full px-4 z-30">
+            <AudioPlayer
+              currentTrackIndex={currentTrackIndex}
+              onTrackChange={setCurrentTrackIndex}
+              onOpenPlaylist={() => setIsPlaylistOpen(true)}
+              musicVolume={musicVolume}
+              customTrackId={customYoutubeId}
+            />
+          </div>
+
+          <PlaylistDrawer
+            isOpen={isPlaylistOpen}
+            onClose={() => setIsPlaylistOpen(false)}
+            currentTrackIndex={currentTrackIndex}
+            onSelectTrack={(idx) => { setCustomYoutubeId(null); setCurrentTrackIndex(idx); }}
+            onCustomYoutubeUrl={handleCustomYoutubeUrl}
+          />
+
+        </main>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
