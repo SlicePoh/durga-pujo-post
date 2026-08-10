@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ISTClock from './components/ISTClock';
 import LivePassengersCounter from './components/LivePassengersCounter';
 import AudioPlayer from './components/AudioPlayer';
@@ -16,7 +16,6 @@ export default function App() {
 
   const [musicVolume, setMusicVolume] = useState(0.20); // Starts at 20%
   const [introFinished, setIntroFinished] = useState(false);
-  const [isVideoMuted, setIsVideoMuted] = useState(true);
 
   const videoRef = useRef(null);
   const audioPlayerRef = useRef(null);
@@ -26,44 +25,20 @@ export default function App() {
     localStorage.setItem('omni_pinned_track_index', idx);
   };
 
-  // Auto-unlock audio and video on ANY initial user interaction (click, scroll, keydown, pointer)
-  const triggerUnmuteAndStartVoice = useCallback(() => {
+  // Direct Automatic Video Playback on Mount (No user click needed!)
+  useEffect(() => {
     const video = videoRef.current;
     if (video) {
       video.muted = false;
-      setIsVideoMuted(false);
-      setIntroFinished(false);
+      video.volume = 1.0;
       video.currentTime = 0;
-      video.volume = 1.0; // 100% Video Volume at 0.0s
-      setMusicVolume(0.20); // 20% Music Volume at 0.0s
-
-      // Unlock Dual HTML5 Audio elements
-      if (audioPlayerRef.current && typeof audioPlayerRef.current.playFromStart === 'function') {
-        audioPlayerRef.current.playFromStart();
-      }
-
-      video.play().catch(e => console.log('Unmute play:', e));
+      video.play().catch(e => {
+        console.log("Unmuted autoplay notice, retrying...", e);
+        video.muted = true;
+        video.play();
+      });
     }
   }, []);
-
-  // Auto-listen for first touch/interaction anywhere on window to auto-start!
-  useEffect(() => {
-    const handleFirstInteraction = () => {
-      if (isVideoMuted) {
-        triggerUnmuteAndStartVoice();
-      }
-    };
-
-    window.addEventListener('pointerdown', handleFirstInteraction, { once: true });
-    window.addEventListener('keydown', handleFirstInteraction, { once: true });
-    window.addEventListener('touchstart', handleFirstInteraction, { once: true });
-
-    return () => {
-      window.removeEventListener('pointerdown', handleFirstInteraction);
-      window.removeEventListener('keydown', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
-    };
-  }, [isVideoMuted, triggerUnmuteAndStartVoice]);
 
   // Video (100% -> 70%) & Aahun Aahun Music (20% -> 100%) Exact 8-Second Mixing Engine
   useEffect(() => {
@@ -74,14 +49,13 @@ export default function App() {
       const t = video.currentTime;
       const duration = video.duration || 15;
 
-      if (!video.muted && !introFinished) {
+      if (!introFinished) {
         if (t <= 8.0) {
-          // Exact User Formula:
           // Video Audio: 100% (1.0) at 0s -> fades down to 70% (0.70) at 8s
           // Music Audio: 20% (0.20) at 0s -> fades up to 100% (1.0) at 8s
-          const prog = t / 8.0; // 0.0 to 1.0
-          video.volume = 1.0 - (0.30 * prog); // 1.0 -> 0.70
-          setMusicVolume(0.20 + (0.80 * prog)); // 0.20 -> 1.0
+          const prog = t / 8.0;
+          video.volume = 1.0 - (0.30 * prog);
+          setMusicVolume(0.20 + (0.80 * prog));
         } 
         else if (t > 8.0) {
           video.volume = 0.0;
@@ -109,19 +83,15 @@ export default function App() {
   };
 
   return (
-    <main 
-      onClick={triggerUnmuteAndStartVoice}
-      className="relative flex min-h-dvh flex-1 flex-col items-center justify-between overflow-hidden select-none cursor-pointer"
-    >
+    <main className="relative flex min-h-dvh flex-1 flex-col items-center justify-between overflow-hidden select-none">
       
-      {/* Background Full-Bleed Video - Layer 0 (Instant AutoPlay) */}
+      {/* Background Full-Bleed Video - Layer 0 (Instant Unmuted AutoPlay) */}
       <div className="fixed inset-0 z-0 bg-black overflow-hidden">
         <video
           ref={videoRef}
           src="musics.mp4"
           autoPlay
           playsInline
-          muted
           className="h-full w-full object-cover"
         />
         {/* Subtle Vignette Layer */}
@@ -163,28 +133,25 @@ export default function App() {
         </h1>
       </div>
 
-      {/* Bottom Deck Wrapper with "Jaldi Karo!" Button */}
+      {/* Bottom Deck Wrapper */}
       <div className="mb-[8vh] flex flex-col items-center gap-3 z-20 px-6 w-full">
         
         {/* Minimal Glassmorphism "Jaldi Karo!" Button */}
         <button
           type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            triggerUnmuteAndStartVoice();
+          onClick={() => {
+            const video = videoRef.current;
+            if (video) {
+              video.currentTime = 0;
+              video.volume = 1.0;
+              setIntroFinished(false);
+            }
           }}
           className="group/pill inline-flex items-center gap-2 rounded-full py-2 px-5 text-xs font-bold text-white bg-white/10 backdrop-blur-xl border border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.4)] transition hover:bg-white/25 active:scale-95 ring-1 ring-white/20"
         >
           <span className="inline-block w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
           <span>Jaldi Karo! 🚌</span>
         </button>
-
-        {/* Unmute Prompt Banner if Video is Muted */}
-        {isVideoMuted && (
-          <p className="text-[11px] font-medium text-amber-300/90 tracking-wide animate-pulse drop-shadow">
-            🔊 Tap anywhere or move cursor to enter OmniVan
-          </p>
-        )}
 
         {/* Bottom Music Player Pill */}
         <AudioPlayer

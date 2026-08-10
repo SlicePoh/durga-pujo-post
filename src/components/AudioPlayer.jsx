@@ -16,13 +16,11 @@ const AudioPlayer = forwardRef(({
   musicVolume = 0.20, 
   customTrackId = null 
 }, ref) => {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const [progress, setProgress] = useState({ current: 0, duration: 0 });
 
-  // Dual Audio Elements for Studio-Grade 100% Smooth Crossfade Between Playlist Songs
-  const activeSlotRef = useRef('A'); // 'A' or 'B'
-  const audioARef = useRef(null);
-  const audioBRef = useRef(null);
+  // ONE SINGLE STREAMING AUDIO LINE FOR THE ENTIRE APP
+  const audioRef = useRef(null);
 
   const activeTrack = customTrackId 
     ? {
@@ -35,26 +33,12 @@ const AudioPlayer = forwardRef(({
     : OMNI_PLAYLIST[currentTrackIndex] || OMNI_PLAYLIST[0];
 
   useImperativeHandle(ref, () => ({
-    unlockAudio: () => {
-      const a = audioARef.current;
-      const b = audioBRef.current;
-      [a, b].forEach(aud => {
-        if (aud) {
-          aud.currentTime = 0;
-          aud.volume = 0.0;
-          const p = aud.play();
-          if (p !== undefined) {
-            p.then(() => { aud.pause(); aud.currentTime = 0; }).catch(() => {});
-          }
-        }
-      });
-    },
     playFromStart: () => {
-      const a = audioARef.current;
-      if (a) {
-        a.currentTime = 0;
-        a.volume = Math.max(0, Math.min(1, musicVolume));
-        const playPromise = a.play();
+      const aud = audioRef.current;
+      if (aud) {
+        aud.currentTime = 0;
+        aud.volume = Math.max(0, Math.min(1, musicVolume));
+        const playPromise = aud.play();
         if (playPromise !== undefined) {
           playPromise.then(() => setIsPlaying(true)).catch(err => console.log("Audio play error:", err));
         }
@@ -62,86 +46,65 @@ const AudioPlayer = forwardRef(({
     }
   }));
 
-  // Butter-Smooth Crossfade When Switching Songs
+  // Auto-start single audio line on mount
   useEffect(() => {
-    const curAudio = activeSlotRef.current === 'A' ? audioARef.current : audioBRef.current;
-    const nextAudio = activeSlotRef.current === 'A' ? audioBRef.current : audioARef.current;
-
-    if (!curAudio || !nextAudio) return;
-
-    nextAudio.src = activeTrack.audioUrl;
-    nextAudio.currentTime = 0;
-    nextAudio.volume = 0.0;
-
-    if (isPlaying) {
-      const playPromise = nextAudio.play();
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          let fadeStep = 0;
-          const totalSteps = 20;
-          const fadeTimer = setInterval(() => {
-            fadeStep++;
-            const ratio = fadeStep / totalSteps;
-            curAudio.volume = Math.max(0, musicVolume * (1 - ratio));
-            nextAudio.volume = Math.min(1, musicVolume * ratio);
-
-            if (fadeStep >= totalSteps) {
-              clearInterval(fadeTimer);
-              curAudio.pause();
-              curAudio.currentTime = 0;
-              activeSlotRef.current = activeSlotRef.current === 'A' ? 'B' : 'A';
-            }
-          }, 40);
-        }).catch(e => {
-          console.log("Smooth crossfade notice:", e);
-          activeSlotRef.current = activeSlotRef.current === 'A' ? 'B' : 'A';
-        });
-      }
-    } else {
-      activeSlotRef.current = activeSlotRef.current === 'A' ? 'B' : 'A';
+    const aud = audioRef.current;
+    if (aud) {
+      aud.volume = Math.max(0, Math.min(1, musicVolume));
+      aud.play().then(() => setIsPlaying(true)).catch(e => {
+        console.log("Autoplay notice:", e);
+      });
     }
+  }, []);
+
+  // Track change on the single audio line
+  useEffect(() => {
+    const aud = audioRef.current;
+    if (!aud) return;
+
+    aud.src = activeTrack.audioUrl;
+    aud.currentTime = 0;
+    aud.volume = Math.max(0, Math.min(1, musicVolume));
+    aud.play().then(() => setIsPlaying(true)).catch(e => console.log("Track play notice:", e));
   }, [currentTrackIndex]);
 
-  // Synchronize Volume Smoothly
+  // Synchronize Volume Smoothly on the single audio line
   useEffect(() => {
-    const curAudio = activeSlotRef.current === 'A' ? audioARef.current : audioBRef.current;
-    if (curAudio) {
-      curAudio.volume = Math.max(0, Math.min(1, musicVolume));
-      if (musicVolume > 0.01 && curAudio.paused) {
-        curAudio.play().then(() => setIsPlaying(true)).catch(() => {});
-      }
+    const aud = audioRef.current;
+    if (aud) {
+      aud.volume = Math.max(0, Math.min(1, musicVolume));
     }
   }, [musicVolume]);
 
   // Progress Tracker
   useEffect(() => {
     const interval = setInterval(() => {
-      const curAudio = activeSlotRef.current === 'A' ? audioARef.current : audioBRef.current;
-      if (curAudio && curAudio.duration) {
-        setProgress({ current: curAudio.currentTime || 0, duration: curAudio.duration || 0 });
+      const aud = audioRef.current;
+      if (aud && aud.duration) {
+        setProgress({ current: aud.currentTime || 0, duration: aud.duration || 0 });
       }
     }, 400);
     return () => clearInterval(interval);
   }, []);
 
   const togglePlay = () => {
-    const curAudio = activeSlotRef.current === 'A' ? audioARef.current : audioBRef.current;
-    if (!curAudio) return;
+    const aud = audioRef.current;
+    if (!aud) return;
     if (isPlaying) {
-      curAudio.pause();
+      aud.pause();
       setIsPlaying(false);
     } else {
-      curAudio.play().then(() => setIsPlaying(true)).catch(e => console.log('Toggle error:', e));
+      aud.play().then(() => setIsPlaying(true)).catch(e => console.log('Toggle error:', e));
     }
   };
 
   const handleSeek = (e) => {
-    const curAudio = activeSlotRef.current === 'A' ? audioARef.current : audioBRef.current;
-    if (!curAudio || !progress.duration) return;
+    const aud = audioRef.current;
+    if (!aud || !progress.duration) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const pct = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
     const seekTime = pct * progress.duration;
-    curAudio.currentTime = seekTime;
+    aud.currentTime = seekTime;
     setProgress(prev => ({ ...prev, current: seekTime }));
   };
 
@@ -149,26 +112,15 @@ const AudioPlayer = forwardRef(({
 
   return (
     <div className="w-full max-w-xl mx-auto z-30">
+      {/* THE SINGLE UNIFIED AUDIO ELEMENT */}
       <audio 
-        ref={audioARef} 
-        src={OMNI_PLAYLIST[0].audioUrl} 
+        ref={audioRef} 
+        src={activeTrack.audioUrl} 
+        autoPlay
         preload="auto"
         onEnded={() => {
-          if (activeSlotRef.current === 'A') {
-            setIsPlaying(false);
-            onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length);
-          }
-        }}
-      />
-      <audio 
-        ref={audioBRef} 
-        src={OMNI_PLAYLIST[1].audioUrl} 
-        preload="auto"
-        onEnded={() => {
-          if (activeSlotRef.current === 'B') {
-            setIsPlaying(false);
-            onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length);
-          }
+          setIsPlaying(false);
+          onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length);
         }}
       />
 

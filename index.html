@@ -437,134 +437,77 @@
       );
     }
 
-    // --- Dual-HTML5 Audio Engine (Butter-Smooth Song Crossfade) ---
+    // --- Single HTML5 Audio Element (One Single Streaming Audio Line) ---
     const AudioPlayer = forwardRef(({ currentTrackIndex, onTrackChange, onOpenPlaylist, musicVolume, customTrackId }, ref) => {
-      const [isPlaying, setIsPlaying] = useState(false);
+      const [isPlaying, setIsPlaying] = useState(true);
       const [progress, setProgress] = useState({ current: 0, duration: 0 });
 
-      // Dual Audio Elements for 100% Smooth Crossfade Between Tracks
-      const activeAudioRef = useRef(null);
-      const inactiveAudioRef = useRef(null);
-      const activeSlotRef = useRef('A'); // 'A' or 'B'
-
-      const audioARef = useRef(null);
-      const audioBRef = useRef(null);
+      const audioRef = useRef(null);
 
       const activeTrack = customTrackId 
         ? { title: "Custom Stream", artist: "YouTube Track", movie: "User Selection", cover: OMNI_PLAYLIST[0].cover, audioUrl: OMNI_PLAYLIST[0].audioUrl }
         : OMNI_PLAYLIST[currentTrackIndex] || OMNI_PLAYLIST[0];
 
-      // Direct Imperative Handle for 0.0s Entrance & Jaldi Karo!
-      useImperativeHandle(ref, () => ({
-        unlockAudio: () => {
-          const a = audioARef.current;
-          const b = audioBRef.current;
-          [a, b].forEach(aud => {
-            if (aud) {
-              aud.currentTime = 0;
-              aud.volume = 0.0;
-              const p = aud.play();
-              if (p !== undefined) {
-                p.then(() => { aud.pause(); aud.currentTime = 0; }).catch(() => {});
-              }
-            }
-          });
-        },
-        playFromStart: () => {
-          const a = audioARef.current;
-          if (a) {
-            a.currentTime = 0;
-            a.volume = Math.max(0, Math.min(1, musicVolume));
-            const playPromise = a.play();
-            if (playPromise !== undefined) {
-              playPromise.then(() => setIsPlaying(true)).catch(err => console.log("Audio play error:", err));
-            }
-          }
-        }
-      }));
-
-      // Butter-Smooth Crossfade When Switching Tracks
+      // Auto-start single audio line on mount
       useEffect(() => {
-        const curAudio = activeSlotRef.current === 'A' ? audioARef.current : audioBRef.current;
-        const nextAudio = activeSlotRef.current === 'A' ? audioBRef.current : audioARef.current;
-
-        if (!curAudio || !nextAudio) return;
-
-        // Prepare next audio element
-        nextAudio.src = activeTrack.audioUrl;
-        nextAudio.currentTime = 0;
-        nextAudio.volume = 0.0;
-
-        if (isPlaying) {
-          const playPromise = nextAudio.play();
-          if (playPromise !== undefined) {
-            playPromise.then(() => {
-              // Smooth 800ms crossfade between track A and track B
-              let fadeStep = 0;
-              const totalSteps = 20;
-              const fadeTimer = setInterval(() => {
-                fadeStep++;
-                const ratio = fadeStep / totalSteps;
-                curAudio.volume = Math.max(0, musicVolume * (1 - ratio));
-                nextAudio.volume = Math.min(1, musicVolume * ratio);
-
-                if (fadeStep >= totalSteps) {
-                  clearInterval(fadeTimer);
-                  curAudio.pause();
-                  curAudio.currentTime = 0;
-                  activeSlotRef.current = activeSlotRef.current === 'A' ? 'B' : 'A';
-                }
-              }, 40);
-            }).catch(e => {
-              console.log("Smooth crossfade notice:", e);
-              activeSlotRef.current = activeSlotRef.current === 'A' ? 'B' : 'A';
-            });
-          }
-        } else {
-          activeSlotRef.current = activeSlotRef.current === 'A' ? 'B' : 'A';
+        const aud = audioRef.current;
+        if (aud) {
+          aud.volume = Math.max(0, Math.min(1, musicVolume));
+          aud.play().then(() => setIsPlaying(true)).catch(e => {
+            console.log("Autoplay notice:", e);
+          });
         }
+      }, []);
+
+      // Handle track changes cleanly on the single audio line
+      useEffect(() => {
+        const aud = audioRef.current;
+        if (!aud) return;
+
+        aud.src = activeTrack.audioUrl;
+        aud.currentTime = 0;
+        aud.volume = Math.max(0, Math.min(1, musicVolume));
+        
+        aud.play().then(() => setIsPlaying(true)).catch(e => console.log("Track play notice:", e));
       }, [currentTrackIndex]);
 
-      // Synchronize Volume Smoothly
+      // Synchronize Volume Smoothly on the single audio line
       useEffect(() => {
-        const curAudio = activeSlotRef.current === 'A' ? audioARef.current : audioBRef.current;
-        if (curAudio) {
-          curAudio.volume = Math.max(0, Math.min(1, musicVolume));
-          if (musicVolume > 0.01 && curAudio.paused) {
-            curAudio.play().then(() => setIsPlaying(true)).catch(() => {});
-          }
+        const aud = audioRef.current;
+        if (aud) {
+          aud.volume = Math.max(0, Math.min(1, musicVolume));
         }
       }, [musicVolume]);
 
       // Progress Tracker
       useEffect(() => {
         const interval = setInterval(() => {
-          const curAudio = activeSlotRef.current === 'A' ? audioARef.current : audioBRef.current;
-          if (curAudio && curAudio.duration) {
-            setProgress({ current: curAudio.currentTime || 0, duration: curAudio.duration || 0 });
+          const aud = audioRef.current;
+          if (aud && aud.duration) {
+            setProgress({ current: aud.currentTime || 0, duration: aud.duration || 0 });
           }
         }, 400);
         return () => clearInterval(interval);
       }, []);
 
       const togglePlay = () => {
-        const curAudio = activeSlotRef.current === 'A' ? audioARef.current : audioBRef.current;
-        if (!curAudio) return;
+        const aud = audioRef.current;
+        if (!aud) return;
         if (isPlaying) {
-          curAudio.pause();
+          aud.pause();
           setIsPlaying(false);
         } else {
-          curAudio.play().then(() => setIsPlaying(true)).catch(e => console.log('Toggle error:', e));
+          aud.play().then(() => setIsPlaying(true)).catch(e => console.log('Toggle error:', e));
         }
       };
 
       const handleSeek = (e) => {
-        const curAudio = activeSlotRef.current === 'A' ? audioARef.current : audioBRef.current;
-        if (!curAudio || !progress.duration) return;
+        const aud = audioRef.current;
+        if (!aud || !progress.duration) return;
         const rect = e.currentTarget.getBoundingClientRect();
         const pct = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
         const seekTime = pct * progress.duration;
-        curAudio.currentTime = seekTime;
+        aud.currentTime = seekTime;
         setProgress(prev => ({ ...prev, current: seekTime }));
       };
 
@@ -572,27 +515,15 @@
 
       return (
         <div className="w-full max-w-xl mx-auto">
-          {/* Dual Audio Elements for Studio-Grade Butter-Smooth Song Crossfade */}
+          {/* THE SINGLE UNIFIED AUDIO ELEMENT FOR THE ENTIRE APPLICATION */}
           <audio 
-            ref={audioARef} 
+            ref={audioRef} 
             src={OMNI_PLAYLIST[0].audioUrl} 
+            autoPlay
             preload="auto"
             onEnded={() => {
-              if (activeSlotRef.current === 'A') {
-                setIsPlaying(false);
-                onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length);
-              }
-            }}
-          />
-          <audio 
-            ref={audioBRef} 
-            src={OMNI_PLAYLIST[1].audioUrl} 
-            preload="auto"
-            onEnded={() => {
-              if (activeSlotRef.current === 'B') {
-                setIsPlaying(false);
-                onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length);
-              }
+              setIsPlaying(false);
+              onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length);
             }}
           />
 
@@ -681,7 +612,6 @@
 
       const [musicVolume, setMusicVolume] = useState(0.20); // Starts at 20%
       const [introFinished, setIntroFinished] = useState(false);
-      const [isVideoMuted, setIsVideoMuted] = useState(true);
 
       const videoRef = useRef(null);
       const audioPlayerRef = useRef(null);
@@ -691,44 +621,21 @@
         localStorage.setItem('omni_pinned_track_index', idx);
       };
 
-      // Auto-unlock audio and video on ANY initial user interaction (click, scroll, keydown, pointer)
-      const triggerUnmuteAndStartVoice = useCallback(() => {
+      // Direct Automatic Video Playback on Mount (No user interaction needed!)
+      useEffect(() => {
         const video = videoRef.current;
         if (video) {
           video.muted = false;
-          setIsVideoMuted(false);
-          setIntroFinished(false);
+          video.volume = 1.0;
           video.currentTime = 0;
-          video.volume = 1.0; // 100% Video Volume at 0.0s
-          setMusicVolume(0.20); // 20% Music Volume at 0.0s
-
-          // Unlock Dual HTML5 Audio elements
-          if (audioPlayerRef.current && typeof audioPlayerRef.current.playFromStart === 'function') {
-            audioPlayerRef.current.playFromStart();
-          }
-
-          video.play().catch(e => console.log('Unmute play:', e));
+          video.play().catch(e => {
+            // Fallback for strict browser policies
+            console.log("Unmuted autoplay notice, retrying...", e);
+            video.muted = true;
+            video.play();
+          });
         }
       }, []);
-
-      // Auto-listen for first touch/interaction anywhere on window to auto-start!
-      useEffect(() => {
-        const handleFirstInteraction = () => {
-          if (isVideoMuted) {
-            triggerUnmuteAndStartVoice();
-          }
-        };
-
-        window.addEventListener('pointerdown', handleFirstInteraction, { once: true });
-        window.addEventListener('keydown', handleFirstInteraction, { once: true });
-        window.addEventListener('touchstart', handleFirstInteraction, { once: true });
-
-        return () => {
-          window.removeEventListener('pointerdown', handleFirstInteraction);
-          window.removeEventListener('keydown', handleFirstInteraction);
-          window.removeEventListener('touchstart', handleFirstInteraction);
-        };
-      }, [isVideoMuted, triggerUnmuteAndStartVoice]);
 
       // Video (100% -> 70%) & Aahun Aahun Music (20% -> 100%) Exact 8-Second Mixing Engine
       useEffect(() => {
@@ -739,14 +646,13 @@
           const t = video.currentTime;
           const duration = video.duration || 15;
 
-          if (!video.muted && !introFinished) {
+          if (!introFinished) {
             if (t <= 8.0) {
-              // Exact User Formula:
               // Video Audio: 100% (1.0) at 0s -> fades down to 70% (0.70) at 8s
               // Music Audio: 20% (0.20) at 0s -> fades up to 100% (1.0) at 8s
-              const prog = t / 8.0; // 0.0 to 1.0
-              video.volume = 1.0 - (0.30 * prog); // 1.0 -> 0.70
-              setMusicVolume(0.20 + (0.80 * prog)); // 0.20 -> 1.0
+              const prog = t / 8.0;
+              video.volume = 1.0 - (0.30 * prog);
+              setMusicVolume(0.20 + (0.80 * prog));
             } 
             else if (t > 8.0) {
               video.volume = 0.0;
@@ -774,19 +680,15 @@
       };
 
       return (
-        <main 
-          onClick={triggerUnmuteAndStartVoice}
-          className="relative flex min-h-dvh flex-1 flex-col items-center justify-between overflow-hidden select-none cursor-pointer"
-        >
+        <main className="relative flex min-h-dvh flex-1 flex-col items-center justify-between overflow-hidden select-none">
           
-          {/* Background Full-Bleed Video - Layer 0 (Instant AutoPlay) */}
+          {/* Background Full-Bleed Video - Layer 0 (Instant Unmuted AutoPlay) */}
           <div className="fixed inset-0 z-0 bg-black overflow-hidden">
             <video
               ref={videoRef}
               src="musics.mp4"
               autoPlay
               playsInline
-              muted
               className="h-full w-full object-cover"
             />
             {/* Subtle Vignette Layer */}
@@ -828,28 +730,25 @@
             </h1>
           </div>
 
-          {/* Bottom Deck Wrapper with "Jaldi Karo!" Button */}
+          {/* Bottom Deck Wrapper */}
           <div className="mb-[8vh] flex flex-col items-center gap-3 z-20 px-6 w-full">
             
             {/* Minimal Glassmorphism "Jaldi Karo!" Button */}
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                triggerUnmuteAndStartVoice();
+              onClick={() => {
+                const video = videoRef.current;
+                if (video) {
+                  video.currentTime = 0;
+                  video.volume = 1.0;
+                  setIntroFinished(false);
+                }
               }}
               className="group/pill inline-flex items-center gap-2 rounded-full py-2 px-5 text-xs font-bold text-white bg-white/10 backdrop-blur-xl border border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.4)] transition hover:bg-white/25 active:scale-95 ring-1 ring-white/20"
             >
               <span className="inline-block w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
               <span>Jaldi Karo! 🚌</span>
             </button>
-
-            {/* Unmute Prompt Banner if Video is Muted */}
-            {isVideoMuted && (
-              <p className="text-[11px] font-medium text-amber-300/90 tracking-wide animate-pulse drop-shadow">
-                🔊 Tap anywhere or move cursor to enter OmniVan
-              </p>
-            )}
 
             {/* Bottom Music Player Pill */}
             <AudioPlayer
