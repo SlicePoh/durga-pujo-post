@@ -21,12 +21,11 @@ export default function App() {
   const videoRef = useRef(null);
   const audioPlayerRef = useRef(null);
 
-  // Changing tracks MUST NOT restart the background video & MUST immediately auto-play the new track at 100% volume!
+  // Changing tracks MUST NOT restart the background video! Video stays in last 4s loop!
   const handleSetTrack = (idx) => {
     setCurrentTrackIndex(idx);
     localStorage.setItem('omni_pinned_track_index', idx);
     setIntroFinished(true); // Locks video in continuous 4s vibe loop
-    setMusicVolume(1.0);    // Immediately sets full volume for new track
   };
 
   // Ultra-Seamless Entrance Trigger
@@ -198,6 +197,7 @@ export default function App() {
           onOpenPlaylist={() => setIsPlaylistOpen(true)}
           musicVolume={musicVolume}
           customTrackId={customYoutubeId}
+          hasStarted={hasStarted}
         />
       </div>
 
