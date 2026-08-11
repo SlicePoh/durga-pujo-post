@@ -1,13 +1,12 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Images } from 'lucide-react';
 import ISTClock from './components/ISTClock';
-import LivePassengersCounter from './components/LivePassengersCounter';
 import AudioPlayer from './components/AudioPlayer';
 import PlaylistDrawer from './components/PlaylistDrawer';
 import {
   SPOTIFY_PLAYLIST_URL,
   YOUTUBE_MUSIC_PLAYLIST_URL,
-  OMNI_PLAYLIST,
+  PUJA_PLAYLIST,
   BACKGROUNDS,
   BACKGROUND_STYLES,
 } from './data/playlist';
@@ -15,7 +14,7 @@ import { Analytics } from '@vercel/analytics/react';
 
 export default function App() {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(() => {
-    const saved = localStorage.getItem('omni_pinned_track_index');
+    const saved = localStorage.getItem('puja_track_index');
     return saved !== null ? parseInt(saved, 10) : 0;
   });
 
@@ -36,7 +35,7 @@ export default function App() {
 
   // Resolve the background scene for the active track.
   // A track may specify `bg` (a BACKGROUNDS id); otherwise cycle by index.
-  const activeTrack = OMNI_PLAYLIST[currentTrackIndex] || OMNI_PLAYLIST[0];
+  const activeTrack = PUJA_PLAYLIST[currentTrackIndex] || PUJA_PLAYLIST[0];
   const bgIndex = (() => {
     if (activeTrack?.bg) {
       const found = BACKGROUNDS.findIndex(b => b.id === activeTrack.bg);
@@ -49,7 +48,7 @@ export default function App() {
 
   const handleSetTrack = (idx) => {
     setCurrentTrackIndex(idx);
-    localStorage.setItem('omni_pinned_track_index', idx);
+    localStorage.setItem('puja_track_index', idx);
   };
 
   const toggleStyle = () => {
@@ -131,7 +130,6 @@ export default function App() {
       <header className="relative z-20 w-full px-4 pt-3 sm:pt-5 flex items-center justify-between gap-2 max-w-7xl mx-auto">
         <div className="flex items-center gap-2">
           <ISTClock />
-          <LivePassengersCounter />
         </div>
 
         {/* Clean Top Title */}
@@ -183,7 +181,7 @@ export default function App() {
             aria-label="Switch image style"
           >
             <Images className="w-3.5 h-3.5" />
-            <span className="uppercase tracking-wide">{styleName === BACKGROUND_STYLES[0] ? 'Style 1' : 'Style 2'}</span>
+            <span className="uppercase tracking-wide">{styleName === BACKGROUND_STYLES[0] ? 'Editorial' : 'Cinematic'}</span>
           </button>
         </div>
 

@@ -63,7 +63,7 @@ export default function NostalgiaSFX() {
       setActiveEffect('horn');
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
       
-      // Dual-tone classic Omni pressure horn (380Hz + 440Hz)
+      // Dual-tone pressure horn (380Hz + 440Hz)
       const osc1 = ctx.createOscillator();
       const osc2 = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -99,7 +99,7 @@ export default function NostalgiaSFX() {
         className={`glass-pill px-3 py-2 rounded-full flex items-center gap-2 text-xs font-medium text-amber-200 shadow-lg transition-all active:scale-95 ${
           activeEffect === 'door' ? 'bg-amber-500/30 ring-2 ring-amber-400 scale-105' : 'hover:bg-white/15'
         }`}
-        title="Trigger Omni Sliding Door Sound"
+        title="Trigger Sliding Door Sound"
       >
         <Volume2 className="w-4 h-4 text-amber-400 animate-bounce" />
         <span className="hidden sm:inline">Sliding Door</span>
@@ -111,7 +111,7 @@ export default function NostalgiaSFX() {
         className={`glass-pill px-3 py-2 rounded-full flex items-center gap-2 text-xs font-medium text-emerald-200 shadow-lg transition-all active:scale-95 ${
           activeEffect === 'horn' ? 'bg-emerald-500/30 ring-2 ring-emerald-400 scale-105' : 'hover:bg-white/15'
         }`}
-        title="Trigger Omni Pressure Horn"
+        title="Trigger Pressure Horn"
       >
         <Radio className="w-4 h-4 text-emerald-400" />
         <span className="hidden sm:inline">Van Horn</span>

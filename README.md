@@ -10,7 +10,7 @@
 - 🎨 **Dual Art Styles** — Toggle between Style 1 and Style 2 (same scenes, different aesthetics). Preference saved in localStorage.
 - 🎵 **Glassmorphic Music Player** — Play/pause, prev/next, seek bar, spinning vinyl cover art, and a full playlist drawer.
 - 📋 **Playlist Drawer** — Search songs, pick a track, or paste a custom YouTube URL to stream anything.
-- 🟢 **Live Pandal Hoppers Counter** — Animated visitor counter with realistic fluctuation.
+- 🟢 **Durga Puja SFX** — Interactive dhak, horn, and sliding-door sound effects.
 - 🕒 **IST Clock** — Live Indian Standard Time display.
 - 📊 **Vercel Analytics** — Built-in page-view tracking.
 
@@ -44,7 +44,7 @@ src/
     AudioPlayer.jsx
     PlaylistDrawer.jsx
     ISTClock.jsx
-    LivePassengersCounter.jsx
+    NostalgiaSFX.jsx
 ```
 
 ---

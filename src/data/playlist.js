@@ -1,5 +1,5 @@
-// Durga Puja background scenes. Each song can point to one of these via `bg`.
-// Same filenames exist in both `style1` and `style2` folders — user can toggle style.
+﻿// Durga Puja background scenes. Each song can point to one of these via `bg`.
+// Same filenames exist in both `style1` and `style2` folders â€” user can toggle style.
 export const BACKGROUNDS = [
   { id: "mohaloya", file: "mohaloya.png", label: "Mahalaya", vibe: "Dawn of Devi Paksha" },
   { id: "kumortuli", file: "kumortuli.png", label: "Kumortuli", vibe: "Idols taking shape" },
@@ -11,99 +11,215 @@ export const BACKGROUNDS = [
 
 export const BACKGROUND_STYLES = ["style1", "style2"];
 
-export const OMNI_PLAYLIST = [
+export const PUJA_PLAYLIST = [
   {
-    id: "aahun-aahun",
-    youtubeId: "kYJ46_3gC_s",
-    audioUrl: "/audio/aahun_aahun.mp3",
-    title: "Aahun Aahun",
-    artist: "Neeraj Shridhar, Master Saleem & Suzie Q",
-    movie: "Love Aaj Kal (2009)",
-    cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=600&auto=format&fit=crop"
+    id: "jago-durga",
+    audioUrl: "/audio/Jago Durga Dashapraharanadharinee_spotdown.org.mp3",
+    title: "Jago Durga Dashapraharanadharinee",
+    artist: "Dwijen Mukherjee",
+    movie: "Durga Vandana",
+    cover: "https://i.scdn.co/image/ab67616d00001e022a497efb96016d4d26cb83b4",
+    bg: "mohaloya"
   },
   {
-    id: "give-me-some-sunshine",
-    youtubeId: "Vd9QvvdQG9E",
-    audioUrl: "/audio/give_me_some_sunshine.mp3",
-    title: "Give Me Some Sunshine",
-    artist: "Suraj Jagan & Sharman Joshi",
-    movie: "3 Idiots (2009)",
-    cover: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=600&auto=format&fit=crop"
+    id: "bajlo-tomar",
+    audioUrl: "/audio/Bajlo Tomar Aalor Benu With Narration_spotdown.org.mp3",
+    title: "Bajlo Tomar Aalor Benu",
+    artist: "Supriti Ghosh",
+    movie: "Bajlo Tomar Aalor Benu",
+    cover: "https://i.scdn.co/image/ab67616d00001e02759df1fcaea412cb5dbd5dca",
+    bg: "mohaloya"
   },
   {
-    id: "kabhi-kabhi-aditi",
-    youtubeId: "NDgT16sZ1F8",
-    audioUrl: "/audio/kabhi_kabhi_aditi.mp3",
-    title: "Kabhi Kabhi Aditi Zindagi",
-    artist: "Rashid Ali",
-    movie: "Jaane Tu... Ya Jaane Na (2008)",
-    cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600&auto=format&fit=crop"
+    id: "dugga-elo",
+    audioUrl: "/audio/Dugga Elo_spotdown.org.mp3",
+    title: "Dugga Elo",
+    artist: "Monali Thakur & Guddu",
+    movie: "Dugga Elo (2019)",
+    cover: "https://i.scdn.co/image/ab67616d00001e02877df1f4d86607531a93ead2",
+    bg: "pandal"
   },
   {
-    id: "iktara",
-    youtubeId: "fSS_R91Nimw",
-    audioUrl: "/audio/iktara.mp3",
-    title: "Iktara",
-    artist: "Kavita Seth & Amitabh Bhattacharya",
-    movie: "Wake Up Sid (2009)",
-    cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop"
+    id: "dugga-ma",
+    audioUrl: "/audio/Dugga Ma_spotdown.org.mp3",
+    title: "Dugga Ma",
+    artist: "Arijit Singh & Arindom",
+    movie: "Bolo Dugga Maiki (2017)",
+    cover: "https://i.scdn.co/image/ab67616d00001e022cf78e9352b8cdb025babdf5",
+    bg: "kumortuli"
   },
   {
-    id: "tu-jaane-na",
-    youtubeId: "P8PWN1OmZOA",
-    audioUrl: "/audio/tu_jaane_na.mp3",
-    title: "Tu Jaane Na",
-    artist: "Atif Aslam",
-    movie: "Ajab Prem Ki Ghazab Kahani (2009)",
-    cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=600&auto=format&fit=crop"
+    id: "dhak-baja",
+    audioUrl: "/audio/Dhak Baja Kashor Baja_spotdown.org.mp3",
+    title: "Dhak Baja Kashor Baja",
+    artist: "Shreya Ghoshal & Jeet Gannguli",
+    movie: "Dhak Baja Kashor Baja (2016)",
+    cover: "https://i.scdn.co/image/ab67616d00001e0221792f8da1279de3b03b4b80",
+    bg: "pandal"
   },
   {
-    id: "emptiness",
-    youtubeId: "Y-J8a46yL6c",
-    audioUrl: "/audio/tu_jaane_na.mp3",
-    title: "Emptiness (Tune Mere Jaana)",
-    artist: "Gajendra Verma",
-    movie: "Indie Pop Nostalgia (2011)",
-    cover: "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=600&auto=format&fit=crop"
+    id: "dhaker-taley",
+    audioUrl: "/audio/Dhaker Taley_spotdown.org.mp3",
+    title: "Dhaker Taley",
+    artist: "Abhijeet, Parineeta, Sudipto & Jeet Gannguli",
+    movie: "Poran Jaye Joliya Re (2009)",
+    cover: "https://i.scdn.co/image/ab67616d00001e026c1900d916af2dc72ba7c9eb",
+    bg: "bonedi1"
   },
   {
-    id: "baby-bieber",
-    youtubeId: "kffacxfA7G4",
-    audioUrl: "/audio/give_me_some_sunshine.mp3",
-    title: "Baby",
-    artist: "Justin Bieber ft. Ludacris",
-    movie: "My World 2.0 (2010)",
-    cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=600&auto=format&fit=crop"
+    id: "emon-madhur",
+    audioUrl: "/audio/Emon Madhur Sandhyay_spotdown.org.mp3",
+    title: "Emon Madhur Sandhyay",
+    artist: "Asha Bhosle & R. D. Burman",
+    movie: "Ekanta Apan (1987)",
+    cover: "https://i.scdn.co/image/ab67616d00001e0288eb8bd72f0b5f649c941797",
+    bg: "night"
   },
   {
-    id: "masakali",
-    youtubeId: "e-k76oWfUCo",
-    audioUrl: "/audio/masakali.mp3",
-    title: "Masakali",
-    artist: "Mohit Chauhan & A.R. Rahman",
-    movie: "Delhi-6 (2009)",
-    cover: "https://images.unsplash.com/photo-1487180144351-b8472da7d491?q=80&w=600&auto=format&fit=crop"
+    id: "aar-koto-raat",
+    audioUrl: "/audio/Aar Koto Raat Eka Thakbo_spotdown.org.mp3",
+    title: "Aar Koto Raat Eka Thakbo",
+    artist: "Bappi Lahiri & Asha Bhosle",
+    movie: "Chokher Aloye (1989)",
+    cover: "https://i.scdn.co/image/ab67616d00001e0227f30dba0f8f29ef9a080177",
+    bg: "night"
   },
   {
-    id: "pee-loon",
-    youtubeId: "0G6C8QfFq_M",
-    audioUrl: "/audio/pee_loon.mp3",
-    title: "Pee Loon",
-    artist: "Mohit Chauhan",
-    movie: "Once Upon a Time in Mumbaai (2010)",
-    cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop"
+    id: "katha-hoyechhilo",
+    audioUrl: "/audio/Katha Hoyechhilo_spotdown.org.mp3",
+    title: "Katha Hoyechhilo",
+    artist: "Asha Bhosle",
+    movie: "Katha Hoyechhilo (2023)",
+    cover: "https://i.scdn.co/image/ab67616d00001e02c503a1a8f61453b187e65441",
+    bg: "bonedi2"
   },
   {
-    id: "pani-da-rang",
-    youtubeId: "n_s_QYmJ8U4",
-    audioUrl: "/audio/pani_da_rang.mp3",
-    title: "Pani Da Rang",
-    artist: "Ayushmann Khurrana",
-    movie: "Vicky Donor (2012)",
-    cover: "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop"
+    id: "ekta-deshlai",
+    audioUrl: "/audio/Ekta Deshlai Kathi Jwalao_spotdown.org.mp3",
+    title: "Ekta Deshlai Kathi Jwalao",
+    artist: "Asha Bhosle & R. D. Burman",
+    movie: "Puja Hits 81â€“84",
+    cover: "https://i.scdn.co/image/ab67616d00001e027e16ff5c21b1e73830514660",
+    bg: "bonedi1"
+  },
+  {
+    id: "kine-de-reshmi",
+    audioUrl: "/audio/Kine De Reshmi Churi_spotdown.org.mp3",
+    title: "Kine De Reshmi Churi",
+    artist: "Asha Bhosle & R. D. Burman",
+    movie: "Serashilpi Seragaan (1983)",
+    cover: "https://i.scdn.co/image/ab67616d00001e020696b46de071010225b7cd4c",
+    bg: "bonedi2"
+  },
+  {
+    id: "chirodini-tumi",
+    audioUrl: "/audio/Chirodini Tumi Je Aamar - Male Version_spotdown.org.mp3",
+    title: "Chirodini Tumi Je Aamar",
+    artist: "Kishore Kumar",
+    movie: "Amor Sanghi (1987)",
+    cover: "https://i.scdn.co/image/ab67616d00001e02d60dfc26dd405ebb9ae11ef9",
+    bg: "night"
+  },
+  {
+    id: "aaj-ei-dintake",
+    audioUrl: "/audio/Aaj Ei Dintake_spotdown.org.mp3",
+    title: "Aaj Ei Dintake",
+    artist: "Kishore Kumar",
+    movie: "Ei Toh Aamader Kishore (2022)",
+    cover: "https://i.scdn.co/image/ab67616d00001e0206f8db75dac07d9bbb5cbb79",
+    bg: "pandal"
+  },
+  {
+    id: "amay-prashna",
+    audioUrl: "/audio/Amay Prashna Kare Neel Dhrubatara_spotdown.org.mp3",
+    title: "Amay Prashna Kare Neel Dhrubatara",
+    artist: "Hemanta Mukherjee",
+    movie: "Bengali Monsoon Hits",
+    cover: "https://i.scdn.co/image/ab67616d00001e02f491a7122a0f3d468668b85c",
+    bg: "kumortuli"
+  },
+  {
+    id: "priyotama",
+    audioUrl: "/audio/Priyotama Mone Rekho_spotdown.org.mp3",
+    title: "Priyotama Mone Rekho",
+    artist: "Kumar Sanu",
+    movie: "Naktala Udayan Sangha (2009)",
+    cover: "https://i.scdn.co/image/ab67616d00001e02d7442b40644b339907f7dd1d",
+    bg: "bonedi1"
+  },
+  {
+    id: "ebar-jeno",
+    audioUrl: "/audio/Ebar Jeno Onno Rokom Pujo_spotdown.org.mp3",
+    title: "Ebar Jeno Onno Rokom Pujo",
+    artist: "Nakash Aziz, Antara Mitra & Indraadip Dasgupta",
+    movie: "Yoddha (2014)",
+    cover: "https://i.scdn.co/image/ab67616d00001e02dff82889c347a6db8a7e4fe5",
+    bg: "pandal"
+  },
+  {
+    id: "shundori-komola",
+    audioUrl: "/audio/Shundori Komola_spotdown.org.mp3",
+    title: "Shundori Komola",
+    artist: "Armaan Malik & Antara Mitra",
+    movie: "Villain (2018)",
+    cover: "https://i.scdn.co/image/ab67616d00001e02f1655c062fdaad4007ce5a74",
+    bg: "night"
+  },
+  {
+    id: "jago-uma",
+    audioUrl: "/audio/Jago Uma_spotdown.org.mp3",
+    title: "Jago Uma",
+    artist: "Rupankar Bagchi & Anupam Roy",
+    movie: "Uma (2018)",
+    cover: "https://i.scdn.co/image/ab67616d00001e027e002e228aecc71e772cbfa2",
+    bg: "mohaloya"
+  },
+  {
+    id: "pujo-pujo-gondho",
+    audioUrl: "/audio/Pujo Pujo Gondho_spotdown.org.mp3",
+    title: "Pujo Pujo Gondho",
+    artist: "Anupam Roy",
+    movie: "Pujo Pujo Gondho (2024)",
+    cover: "https://i.scdn.co/image/ab67616d00001e02fd67fb9b5f35789bae6d9164",
+    bg: "kumortuli"
+  },
+  {
+    id: "ailo-uma",
+    audioUrl: "/audio/Ailo Uma Barite_spotdown.org.mp3",
+    title: "Ailo Uma Barite",
+    artist: "Antara Nandy & Monami Ghosh",
+    movie: "Ailo Uma Barite (2023)",
+    cover: "https://i.scdn.co/image/ab67616d00001e02975a4dfd90939c56f283b89e",
+    bg: "bonedi2"
+  },
+  {
+    id: "shubho-shubho",
+    audioUrl: "/audio/Shubho Shubho_spotdown.org.mp3",
+    title: "Shubho Shubho",
+    artist: "Amit Trivedi & Altamash Faridi",
+    movie: "Mrs. Chatterjee Vs Norway (2023)",
+    cover: "https://i.scdn.co/image/ab67616d00001e02cd14760154723de30cbf1b3d",
+    bg: "pandal"
+  },
+  {
+    id: "uma-ashe",
+    audioUrl: "/audio/Uma Ashe Notun Saje_spotdown.org.mp3",
+    title: "Uma Ashe Notun Saje",
+    artist: "Ankita Bhattacharyya",
+    movie: "Uma Ashe Notun Saje (2024)",
+    cover: "https://i.scdn.co/image/ab67616d00001e024a43a4253ff8aaa5cde609c4",
+    bg: "kumortuli"
+  },
+  {
+    id: "gold-priter",
+    audioUrl: "/audio/Gold Priter Sari_spotdown.org.mp3",
+    title: "Gold Priter Sari",
+    artist: "Mita Chatterjee",
+    movie: "Sukheri Chowate (2018)",
+    cover: "https://i.scdn.co/image/ab67616d00001e024084058303be1a2542d3f556",
+    bg: "bonedi1"
   }
 ];
 
-export const SPOTIFY_PLAYLIST_URL = "https://open.spotify.com/playlist/1GsF2PLwdrRXVQr3S3KS5x?si=b8765d9a93d44afb";
-export const YOUTUBE_MUSIC_PLAYLIST_URL = "https://music.youtube.com/playlist?list=PLakxceWWkI7w&si=c7atNGw1N5de895I";
-export const SPOTIFY_EMBED_SRC = "https://open.spotify.com/embed/playlist/1GsF2PLwdrRXVQr3S3KS5x?utm_source=generator&si=845f772cf59b4360";
+export const SPOTIFY_PLAYLIST_URL = "https://open.spotify.com/playlist/7FIG5Rc1VdN41ub2rZUNcP";
+export const YOUTUBE_MUSIC_PLAYLIST_URL = "https://music.youtube.com/playlist?list=PLakxceWWkI7w";

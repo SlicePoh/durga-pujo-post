@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Play, Music, Sparkles, Plus, ExternalLink } from 'lucide-react';
-import { OMNI_PLAYLIST, SPOTIFY_PLAYLIST_URL, YOUTUBE_MUSIC_PLAYLIST_URL } from '../data/playlist';
+import { PUJA_PLAYLIST, SPOTIFY_PLAYLIST_URL, YOUTUBE_MUSIC_PLAYLIST_URL } from '../data/playlist';
 
 export default function PlaylistDrawer({ isOpen, onClose, currentTrackIndex, onSelectTrack, onCustomYoutubeUrl }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -8,7 +8,7 @@ export default function PlaylistDrawer({ isOpen, onClose, currentTrackIndex, onS
 
   if (!isOpen) return null;
 
-  const filteredPlaylist = OMNI_PLAYLIST.filter(track => 
+  const filteredPlaylist = PUJA_PLAYLIST.filter(track => 
     track.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     track.artist.toLowerCase().includes(searchTerm.toLowerCase()) ||
     track.movie.toLowerCase().includes(searchTerm.toLowerCase())
@@ -100,7 +100,7 @@ export default function PlaylistDrawer({ isOpen, onClose, currentTrackIndex, onS
         {/* Track List */}
         <div className="flex-1 overflow-y-auto pr-1 space-y-2">
           {filteredPlaylist.map((track, idx) => {
-            const originalIndex = OMNI_PLAYLIST.findIndex(t => t.id === track.id);
+            const originalIndex = PUJA_PLAYLIST.findIndex(t => t.id === track.id);
             const isPlaying = originalIndex === currentTrackIndex;
 
             return (

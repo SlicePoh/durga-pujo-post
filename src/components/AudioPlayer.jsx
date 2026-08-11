@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, useCallback } from 'react';
 import { Play, Pause, SkipBack, SkipForward, ListMusic } from 'lucide-react';
-import { OMNI_PLAYLIST } from '../data/playlist';
+import { PUJA_PLAYLIST } from '../data/playlist';
 
 function formatTime(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
@@ -28,10 +28,10 @@ const AudioPlayer = forwardRef(({
         title: "Custom Stream",
         artist: "YouTube Stream",
         movie: "User Selected",
-        cover: OMNI_PLAYLIST[0].cover,
-        audioUrl: OMNI_PLAYLIST[0].audioUrl
+        cover: PUJA_PLAYLIST[0].cover,
+        audioUrl: PUJA_PLAYLIST[0].audioUrl
       }
-    : OMNI_PLAYLIST[currentTrackIndex] || OMNI_PLAYLIST[0];
+    : PUJA_PLAYLIST[currentTrackIndex] || PUJA_PLAYLIST[0];
 
   // Guaranteed Initial Start for Aahun Aahun from 0:00 at 20% Volume
   useImperativeHandle(ref, () => ({
@@ -138,7 +138,7 @@ const AudioPlayer = forwardRef(({
         }}
         onEnded={() => {
           setIsPlaying(false);
-          onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length);
+          onTrackChange((currentTrackIndex + 1) % PUJA_PLAYLIST.length);
         }}
       />
 
@@ -173,7 +173,7 @@ const AudioPlayer = forwardRef(({
         <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
           <button 
             type="button"
-            onClick={() => onTrackChange((currentTrackIndex - 1 + OMNI_PLAYLIST.length) % OMNI_PLAYLIST.length)} 
+            onClick={() => onTrackChange((currentTrackIndex - 1 + PUJA_PLAYLIST.length) % PUJA_PLAYLIST.length)} 
             className="grid h-8 w-8 sm:h-9 sm:w-9 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white active:scale-95"
             aria-label="Previous Track"
           >
@@ -191,7 +191,7 @@ const AudioPlayer = forwardRef(({
 
           <button 
             type="button"
-            onClick={() => onTrackChange((currentTrackIndex + 1) % OMNI_PLAYLIST.length)} 
+            onClick={() => onTrackChange((currentTrackIndex + 1) % PUJA_PLAYLIST.length)} 
             className="grid h-8 w-8 sm:h-9 sm:w-9 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white active:scale-95"
             aria-label="Next Track"
           >
