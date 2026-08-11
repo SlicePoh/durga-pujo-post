@@ -94,7 +94,7 @@ const AudioPlayer = forwardRef(({
   useEffect(() => {
     const interval = setInterval(() => {
       const aud = audioRef.current;
-      if (aud && aud.duration) {
+      if (aud?.duration) {
         setProgress({ current: aud.currentTime || 0, duration: aud.duration || 0 });
       }
     }, 400);
@@ -111,6 +111,17 @@ const AudioPlayer = forwardRef(({
     setProgress(prev => ({ ...prev, current: seekTime }));
   };
 
+  const handleSeekKeyDown = (e) => {
+    const aud = audioRef.current;
+    if (!aud || !progress.duration) return;
+    const step = progress.duration * 0.05;
+    if (e.key === 'ArrowRight') {
+      aud.currentTime = Math.min(progress.duration, aud.currentTime + step);
+    } else if (e.key === 'ArrowLeft') {
+      aud.currentTime = Math.max(0, aud.currentTime - step);
+    }
+  };
+
   const percent = progress.duration > 0 ? (progress.current / progress.duration) * 100 : 0;
 
   return (
@@ -120,16 +131,13 @@ const AudioPlayer = forwardRef(({
         ref={audioRef} 
         src={activeTrack.audioUrl} 
         preload="auto"
-        onCanPlay={() => {
-          if (audioRef.current && audioRef.current.paused && !isFirstMountRef.current) {
-            audioRef.current.play().then(() => onPlayingChange(true)).catch(() => {});
-          }
-        }}
         onEnded={() => {
           onPlayingChange(false);
           onTrackChange((currentTrackIndex + 1) % PUJA_PLAYLIST.length);
         }}
-      />
+      >
+        <track kind="captions" />
+      </audio>
 
       <div className="group relative flex items-center gap-2.5 sm:gap-4 rounded-3xl sm:rounded-full p-2.5 sm:p-3 pr-3 sm:pr-5 bg-white/10 backdrop-blur-xs backdrop-saturate-150 border border-white/20 shadow-[0_8px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.25)]">
         {/* Cover Art */}
@@ -146,7 +154,7 @@ const AudioPlayer = forwardRef(({
           <p className="truncate text-[11px] sm:text-xs text-white/70">{activeTrack.artist}</p>
 
           <div className="mt-1 sm:mt-1.5">
-            <div onClick={handleSeek} className="group/bar relative h-2 w-full cursor-pointer" role="slider" aria-label="Seek">
+            <div onClick={handleSeek} onKeyDown={handleSeekKeyDown} className="group/bar relative h-2 w-full cursor-pointer" role="slider" tabIndex={0} aria-label="Seek" aria-valuenow={Math.round(percent)} aria-valuemin={0} aria-valuemax={100}>
               <div className="absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 overflow-hidden rounded-full bg-white/20">
                 <div className="h-full rounded-full bg-amber-300/90" style={{ width: `${percent}%` }} />
               </div>

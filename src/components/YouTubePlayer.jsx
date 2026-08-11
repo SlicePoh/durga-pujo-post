@@ -32,10 +32,8 @@ export default function YouTubePlayer({ videoId, onOpenPlaylist, onClose }) {
 
   // Load YouTube IFrame API and create player
   useEffect(() => {
-    let player = null;
-
     const createPlayer = () => {
-      player = new window.YT.Player(containerRef.current, {
+      const instance = new window.YT.Player(containerRef.current, {
         videoId,
         playerVars: { autoplay: 1, controls: 0, modestbranding: 1, rel: 0 },
         events: {
@@ -51,9 +49,10 @@ export default function YouTubePlayer({ videoId, onOpenPlaylist, onClose }) {
           }
         }
       });
+      playerRef.current = instance;
     };
 
-    if (window.YT && window.YT.Player) {
+    if (window.YT?.Player) {
       createPlayer();
     } else {
       // Load the API script if not already present
@@ -106,6 +105,17 @@ export default function YouTubePlayer({ videoId, onOpenPlaylist, onClose }) {
     p.seekTo(pct * progress.duration, true);
   };
 
+  const handleSeekKeyDown = (e) => {
+    const p = playerRef.current;
+    if (!p || !progress.duration) return;
+    const step = progress.duration * 0.05;
+    if (e.key === 'ArrowRight') {
+      p.seekTo(Math.min(progress.duration, progress.current + step), true);
+    } else if (e.key === 'ArrowLeft') {
+      p.seekTo(Math.max(0, progress.current - step), true);
+    }
+  };
+
   const percent = progress.duration > 0 ? (progress.current / progress.duration) * 100 : 0;
 
   return (
@@ -137,7 +147,7 @@ export default function YouTubePlayer({ videoId, onOpenPlaylist, onClose }) {
           <p className="truncate text-[11px] sm:text-xs text-white/70">YouTube</p>
 
           <div className="mt-1 sm:mt-1.5">
-            <div onClick={handleSeek} className="group/bar relative h-2 w-full cursor-pointer">
+            <div onClick={handleSeek} onKeyDown={handleSeekKeyDown} className="group/bar relative h-2 w-full cursor-pointer" role="slider" tabIndex={0} aria-label="Seek" aria-valuenow={Math.round(percent)} aria-valuemin={0} aria-valuemax={100}>
               <div className="absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 overflow-hidden rounded-full bg-white/20">
                 <div className="h-full rounded-full bg-red-400/90" style={{ width: `${percent}%` }} />
               </div>

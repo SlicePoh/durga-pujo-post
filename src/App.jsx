@@ -6,7 +6,6 @@ import YouTubePlayer from './components/YouTubePlayer';
 import PlaylistDrawer from './components/PlaylistDrawer';
 import {
   SPOTIFY_PLAYLIST_URL,
-  YOUTUBE_MUSIC_PLAYLIST_URL,
   PUJA_PLAYLIST,
   BACKGROUNDS,
   BACKGROUND_STYLES,
@@ -16,7 +15,7 @@ import { Analytics } from '@vercel/analytics/react';
 export default function App() {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(() => {
     const saved = localStorage.getItem('puja_track_index');
-    return saved !== null ? parseInt(saved, 10) : 0;
+    return saved !== null ? Number.parseInt(saved, 10) : 0;
   });
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -86,14 +85,74 @@ export default function App() {
     }
   };
 
+  const playerElement = (() => {
+    if (customEmbed?.type === 'youtube') {
+      return (
+        <YouTubePlayer
+          videoId={customEmbed.id}
+          onOpenPlaylist={() => setIsPlaylistOpen(true)}
+          onClose={() => setCustomEmbed(null)}
+        />
+      );
+    }
+    if (customEmbed?.type === 'spotify') {
+      return (
+        <div className="w-full max-w-xl mx-auto z-30">
+          <div className="relative flex items-center gap-2.5 sm:gap-4 rounded-2xl p-2 sm:p-2.5 pr-3 sm:pr-4 bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 shadow-[0_8px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.25)]">
+            {/* Embed area */}
+            <div className="flex-1 min-w-0 rounded-2xl overflow-hidden h-20">
+              <iframe
+                src={`https://open.spotify.com/embed/track/${customEmbed.id}?utm_source=generator&theme=0`}
+                className="w-full h-20 border-0"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                title="Spotify Player"
+              />
+            </div>
+
+            {/* Controls: Playlist + Close */}
+            <div className="flex flex-col items-center gap-1 shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsPlaylistOpen(true)}
+                className="grid h-9 w-9 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white active:scale-95"
+                aria-label="Open Playlist"
+              >
+                <ListMusic className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setCustomEmbed(null)}
+                className="grid h-9 w-9 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white active:scale-95"
+                aria-label="Close custom player"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <AudioPlayer
+        ref={audioPlayerRef}
+        currentTrackIndex={currentTrackIndex}
+        onTrackChange={handleSetTrack}
+        onOpenPlaylist={() => setIsPlaylistOpen(true)}
+        musicVolume={musicVolume}
+        isPlaying={isPlaying}
+        onPlayingChange={setIsPlaying}
+      />
+    );
+  })();
+
   return (
-    <main className="relative flex h-[100dvh] w-full flex-col justify-between overflow-hidden select-none touch-manipulation">
+    <main className="relative flex h-dvh w-full flex-col justify-between overflow-hidden select-none touch-manipulation">
       
       {/* Background Full-Bleed Image — Layer 0 (crossfades on scene change) */}
       <div className="fixed inset-0 z-0 bg-black overflow-hidden pointer-events-none">
         <img key={bgSrc} src={bgSrc} alt={activeBg.label} className="h-full w-full object-cover animate-fade-in" />
         {/* Subtle Gradient Vignette Overlay */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
+        <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-black/50 via-transparent to-black/70" />
       </div>
 
       {/* Top Header Controls Bar */}
@@ -158,57 +217,7 @@ export default function App() {
         </div>
 
         {/* Bottom Music Player */}
-        {customEmbed && customEmbed.type === 'youtube' ? (
-          <YouTubePlayer
-            videoId={customEmbed.id}
-            onOpenPlaylist={() => setIsPlaylistOpen(true)}
-            onClose={() => setCustomEmbed(null)}
-          />
-        ) : customEmbed && customEmbed.type === 'spotify' ? (
-          <div className="w-full max-w-xl mx-auto z-30">
-            <div className="relative flex items-center gap-2.5 sm:gap-4 rounded-3xl sm:rounded-full p-2 sm:p-2.5 pr-3 sm:pr-4 bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 shadow-[0_8px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.25)]">
-              {/* Embed area */}
-              <div className="flex-1 min-w-0 rounded-2xl overflow-hidden h-[80px]">
-                <iframe
-                  src={`https://open.spotify.com/embed/track/${customEmbed.id}?utm_source=generator&theme=0`}
-                  className="w-full h-[80px] border-0"
-                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                  title="Spotify Player"
-                />
-              </div>
-
-              {/* Controls: Playlist + Close */}
-              <div className="flex flex-col items-center gap-1 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setIsPlaylistOpen(true)}
-                  className="grid h-9 w-9 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white active:scale-95"
-                  aria-label="Open Playlist"
-                >
-                  <ListMusic className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCustomEmbed(null)}
-                  className="grid h-9 w-9 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white active:scale-95"
-                  aria-label="Close custom player"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <AudioPlayer
-            ref={audioPlayerRef}
-            currentTrackIndex={currentTrackIndex}
-            onTrackChange={handleSetTrack}
-            onOpenPlaylist={() => setIsPlaylistOpen(true)}
-            musicVolume={musicVolume}
-            isPlaying={isPlaying}
-            onPlayingChange={setIsPlaying}
-          />
-        )}
+        {playerElement}
       </footer>
 
       {/* Playlist Drawer Modal */}

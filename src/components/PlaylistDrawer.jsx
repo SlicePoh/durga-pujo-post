@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Play, Pause, Music, Sparkles, Plus, ExternalLink } from 'lucide-react';
-import { PUJA_PLAYLIST, SPOTIFY_PLAYLIST_URL, YOUTUBE_MUSIC_PLAYLIST_URL } from '../data/playlist';
+import { PUJA_PLAYLIST, SPOTIFY_PLAYLIST_URL } from '../data/playlist';
 
 export default function PlaylistDrawer({ isOpen, onClose, currentTrackIndex, onSelectTrack, onCustomYoutubeUrl, isPlaying, onTogglePlay }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -33,11 +33,12 @@ export default function PlaylistDrawer({ isOpen, onClose, currentTrackIndex, onS
             </div>
             <div>
               <h2 className="text-lg font-bold text-white tracking-wide">Durga Puja Playlist</h2>
-              <p className="text-xs text-white/60">Songs to serenade your pandal hopping · Sharod Utsob</p>
+              <p className="text-xs text-white/60">Songs to serenade your pandal hopping</p>
             </div>
           </div>
           
           <button 
+            type="button"
             onClick={onClose}
             className="p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition active:scale-95"
             aria-label="Close modal"
@@ -83,7 +84,7 @@ export default function PlaylistDrawer({ isOpen, onClose, currentTrackIndex, onS
         <form onSubmit={handleAddCustom} className="flex gap-2 mb-4">
           <input 
             type="text" 
-            placeholder="Paste custom YouTube URL or Video ID..."
+            placeholder="Paste custom YouTube or Spotify URL to play your songs..."
             value={customInput}
             onChange={(e) => setCustomInput(e.target.value)}
             className="flex-1 px-4 py-2 rounded-xl bg-white/5 border border-white/15 text-xs text-white placeholder-white/40 focus:outline-none focus:border-amber-400/60"
@@ -105,13 +106,14 @@ export default function PlaylistDrawer({ isOpen, onClose, currentTrackIndex, onS
             const isActivelyPlaying = isCurrent && isPlaying;
 
             return (
-              <div 
+              <button 
+                type="button"
                 key={track.id}
                 onClick={() => {
                   onSelectTrack(originalIndex);
                   onClose();
                 }}
-                className={`group flex items-center gap-3.5 p-2.5 rounded-2xl cursor-pointer transition-all ${
+                className={`group flex items-center gap-3.5 p-2.5 rounded-2xl cursor-pointer transition-all text-left w-full ${
                   isCurrent 
                     ? 'bg-amber-500/20 border border-amber-400/50 shadow-md' 
                     : 'bg-white/5 border border-white/10 hover:bg-white/10'
@@ -151,7 +153,7 @@ export default function PlaylistDrawer({ isOpen, onClose, currentTrackIndex, onS
                 >
                   {isActivelyPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current ml-0.5" />}
                 </button>
-              </div>
+              </button>
             );
           })}
         </div>

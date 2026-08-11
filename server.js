@@ -1,7 +1,7 @@
-import http from 'http';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import http from 'node:http';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -43,8 +43,8 @@ const server = http.createServer((req, res) => {
     const range = req.headers.range;
     if (range && ext === '.mp4') {
       const parts = range.replace(/bytes=/, "").split("-");
-      const start = parseInt(parts[0], 10);
-      const end = parts[1] ? parseInt(parts[1], 10) : stats.size - 1;
+      const start = Number.parseInt(parts[0], 10);
+      const end = parts[1] ? Number.parseInt(parts[1], 10) : stats.size - 1;
       const chunksize = (end - start) + 1;
       const file = fs.createReadStream(filePath, { start, end });
       res.writeHead(206, {
