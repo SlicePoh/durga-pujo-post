@@ -1,4 +1,4 @@
-# 🪷 শারদ উৎসব — Durga Puja Vibes
+# 🪷 শারদীয় উৎসব — Durga Puja Music Player
 
 > An immersive single-page music player with full-bleed Durga Puja imagery, glassmorphic UI, and a curated Bengali festive playlist. Switch between two art styles, feel the dhak beats, and pandal-hop from your screen.
 
@@ -6,12 +6,14 @@
 
 ## ✨ Features
 
-- 🖼️ **Full-Screen Puja Backgrounds** — 6 scenes (Mahalaya, Kumortuli, Bonedi Bari, Pandal, Night Lights) with a smooth crossfade on track change.
-- 🎨 **Dual Art Styles** — Toggle between Style 1 and Style 2 (same scenes, different aesthetics). Preference saved in localStorage.
+- 🖼️ **Full-Screen Puja Backgrounds** — 6 scenes (Mahalaya, Kumortuli, Bonedi Bari, Raj Bari, Pandal, Night Lights) with a smooth crossfade on track change.
+- 🎨 **Dual Art Styles** — Toggle between Editorial (style1) and Cinematic (style2). Preference saved in localStorage.
 - 🎵 **Glassmorphic Music Player** — Play/pause, prev/next, seek bar, spinning vinyl cover art, and a full playlist drawer.
-- 📋 **Playlist Drawer** — Search songs, pick a track, or paste a custom YouTube URL to stream anything.
-- 🟢 **Durga Puja SFX** — Interactive dhak, horn, and sliding-door sound effects.
+- 📋 **Playlist Drawer** — Search songs, pick a track, or paste a custom YouTube/Spotify URL to play inline.
+- 🎬 **YouTube Custom Player** — Paste any YouTube or YouTube Music link to play audio with a native-looking custom UI (title, thumbnail, seekbar via YT IFrame API).
+- 🟢 **Spotify Embed** — Paste a Spotify track link to play via embedded Spotify player styled to match the app.
 - 🕒 **IST Clock** — Live Indian Standard Time display.
+- 🔤 **Custom Fonts** — Urbanist (Google Fonts) for English, local Bengali font (Sorolota) for Bengali text.
 - 📊 **Vercel Analytics** — Built-in page-view tracking.
 
 ---
@@ -33,18 +35,19 @@ Open `http://localhost:3000` in your browser.
 
 ```
 public/
-  audio/          — MP3 files for each track
+  audio/              — MP3 files for each track
+  bengali font/       — Local Bengali font (Sorolota Unicode)
   images/
-    style1/       — Art style 1 (6 scenes)
-    style2/       — Art style 2 (same 6 scenes)
+    style1/           — Art style 1 "Editorial" (6 scenes)
+    style2/           — Art style 2 "Cinematic" (same 6 scenes)
 src/
-  App.jsx         — Main layout: bg image, header, footer player
-  data/playlist.js — Song list, backgrounds config, Spotify/YT links
+  App.jsx             — Main layout: bg image, header, footer player
+  data/playlist.js    — Song list, backgrounds config, Spotify/YT links
   components/
-    AudioPlayer.jsx
-    PlaylistDrawer.jsx
-    ISTClock.jsx
-    NostalgiaSFX.jsx
+    AudioPlayer.jsx   — Bottom music player pill
+    YouTubePlayer.jsx — Custom YouTube audio player (YT IFrame API)
+    PlaylistDrawer.jsx— Playlist modal with search & custom URL input
+    ISTClock.jsx      — Live IST clock badge
 ```
 
 ---
