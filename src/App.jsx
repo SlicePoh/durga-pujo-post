@@ -98,9 +98,9 @@ export default function App() {
     if (customEmbed?.type === 'spotify') {
       return (
         <div className="w-full max-w-xl mx-auto z-30">
-          <div className="relative flex items-center gap-2 sm:gap-4 rounded-2xl p-1.5 sm:p-2.5 pr-2 sm:pr-4 bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 shadow-[0_8px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.25)]">
+          <div className="relative flex flex-col sm:flex-row items-stretch sm:items-center gap-0 sm:gap-4 rounded-2xl p-1.5 sm:p-2.5 bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 shadow-[0_8px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.25)]">
             {/* Embed area */}
-            <div className="flex-1 min-w-0 rounded-xl sm:rounded-2xl overflow-hidden h-20">
+            <div className="min-w-0 rounded-xl sm:rounded-2xl overflow-hidden h-20 sm:flex-1">
               <iframe
                 src={`https://open.spotify.com/embed/track/${customEmbed.id}?utm_source=generator&theme=0`}
                 className="w-full h-20 border-0"
@@ -110,11 +110,11 @@ export default function App() {
             </div>
 
             {/* Controls: Playlist + Close */}
-            <div className="flex flex-col items-center gap-1 shrink-0">
+            <div className="flex flex-row sm:flex-col items-center justify-center gap-2 sm:gap-1 shrink-0 py-1.5 sm:py-0 sm:pr-2">
               <button
                 type="button"
                 onClick={() => setIsPlaylistOpen(true)}
-                className="grid h-7 w-7 sm:h-9 sm:w-9 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white active:scale-95"
+                className="grid h-8 w-8 sm:h-9 sm:w-9 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white active:scale-95"
                 aria-label="Open Playlist"
               >
                 <ListMusic className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -122,7 +122,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setCustomEmbed(null)}
-                className="grid h-7 w-7 sm:h-9 sm:w-9 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white active:scale-95"
+                className="grid h-8 w-8 sm:h-9 sm:w-9 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white active:scale-95"
                 aria-label="Close custom player"
               >
                 <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
