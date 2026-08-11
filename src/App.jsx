@@ -1,9 +1,16 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
+import { Images } from 'lucide-react';
 import ISTClock from './components/ISTClock';
 import LivePassengersCounter from './components/LivePassengersCounter';
 import AudioPlayer from './components/AudioPlayer';
 import PlaylistDrawer from './components/PlaylistDrawer';
-import { SPOTIFY_PLAYLIST_URL, YOUTUBE_MUSIC_PLAYLIST_URL, OMNI_PLAYLIST } from './data/playlist';
+import {
+  SPOTIFY_PLAYLIST_URL,
+  YOUTUBE_MUSIC_PLAYLIST_URL,
+  OMNI_PLAYLIST,
+  BACKGROUNDS,
+  BACKGROUND_STYLES,
+} from './data/playlist';
 import { Analytics } from '@vercel/analytics/react';
 
 export default function App() {
@@ -16,69 +23,50 @@ export default function App() {
   const [isPlaylistOpen, setIsPlaylistOpen] = useState(false);
   const [customYoutubeId, setCustomYoutubeId] = useState(null);
 
-  const [musicVolume, setMusicVolume] = useState(0.20); // Starts at 20%
-  const [introFinished, setIntroFinished] = useState(false);
+  // Which image pack to use (style1 / style2)
+  const [styleName, setStyleName] = useState(() => {
+    const saved = localStorage.getItem('puja_style');
+    return BACKGROUND_STYLES.includes(saved) ? saved : BACKGROUND_STYLES[0];
+  });
 
-  const videoRef = useRef(null);
   const audioPlayerRef = useRef(null);
 
-  // Changing tracks MUST NOT restart the background video! Video stays in last 4s loop!
+  // Music plays at full volume — no video dialogue mixing anymore.
+  const musicVolume = 1.0;
+
+  // Resolve the background scene for the active track.
+  // A track may specify `bg` (a BACKGROUNDS id); otherwise cycle by index.
+  const activeTrack = OMNI_PLAYLIST[currentTrackIndex] || OMNI_PLAYLIST[0];
+  const bgIndex = (() => {
+    if (activeTrack?.bg) {
+      const found = BACKGROUNDS.findIndex(b => b.id === activeTrack.bg);
+      if (found !== -1) return found;
+    }
+    return currentTrackIndex % BACKGROUNDS.length;
+  })();
+  const activeBg = BACKGROUNDS[bgIndex];
+  const bgSrc = `/images/${styleName}/${activeBg.file}`;
+
   const handleSetTrack = (idx) => {
     setCurrentTrackIndex(idx);
     localStorage.setItem('omni_pinned_track_index', idx);
-    setIntroFinished(true); // Locks video in continuous 4s vibe loop
   };
 
-  // Ultra-Seamless Entrance Trigger
-  const startCommuteExperience = useCallback(() => {
-    const video = videoRef.current;
+  const toggleStyle = () => {
+    setStyleName(prev => {
+      const next = prev === BACKGROUND_STYLES[0] ? BACKGROUND_STYLES[1] : BACKGROUND_STYLES[0];
+      localStorage.setItem('puja_style', next);
+      return next;
+    });
+  };
+
+  // Entrance trigger — browsers block autoplay until a user gesture.
+  const startExperience = useCallback(() => {
     setHasStarted(true);
-
-    if (video) {
-      video.muted = false;
-      video.volume = 1.0; // 100% Video dialogue volume at 0.0s
-      video.currentTime = 0;
-      video.play().catch(err => console.log("Video play notice:", err));
-    }
-
-    setMusicVolume(0.20); // 20% Music volume at 0.0s
     if (audioPlayerRef.current && typeof audioPlayerRef.current.startPlayback === 'function') {
       audioPlayerRef.current.startPlayback();
     }
   }, []);
-
-  // Video (100% -> 20%) & Aahun Aahun Music (20% -> 100%) Exact 8-Second Mixing Engine
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const handleTimeUpdate = () => {
-      const t = video.currentTime;
-      const duration = video.duration || 15;
-
-      if (hasStarted && !introFinished) {
-        if (t <= 8.0) {
-          const prog = t / 8.0; // 0.0 to 1.0
-          video.volume = 1.0 - (0.80 * prog); // 1.0 -> 0.20
-          setMusicVolume(0.20 + (0.80 * prog)); // 0.20 -> 1.0
-        } 
-        else if (t > 8.0) {
-          video.volume = 0.0;
-          setMusicVolume(1.0);
-          setIntroFinished(true);
-        }
-      }
-
-      // Continuous Vibe Loop of last 4 seconds (NEVER RESTARTS ON SONG CHANGE)
-      if (t >= duration - 0.3) {
-        const vibeLoopStart = Math.max(8.0, duration - 4.0);
-        video.currentTime = vibeLoopStart;
-      }
-    };
-
-    video.addEventListener('timeupdate', handleTimeUpdate);
-    return () => video.removeEventListener('timeupdate', handleTimeUpdate);
-  }, [hasStarted, introFinished]);
 
   const handleCustomYoutubeUrl = (input) => {
     let videoId = input;
@@ -90,52 +78,50 @@ export default function App() {
   return (
     <main className="relative flex h-[100dvh] w-full flex-col justify-between overflow-hidden select-none touch-manipulation">
       
-      {/* Background Full-Bleed Video - Layer 0 */}
+      {/* Background Full-Bleed Image — Layer 0 (crossfades on scene change) */}
       <div className="fixed inset-0 z-0 bg-black overflow-hidden pointer-events-none">
-        <video
-          ref={videoRef}
-          src="musics.mp4"
-          autoPlay
-          playsInline
-          muted={!hasStarted}
-          className="h-full w-full object-cover"
+        <img
+          key={bgSrc}
+          src={bgSrc}
+          alt={activeBg.label}
+          className="h-full w-full object-cover animate-fade-in"
         />
         {/* Subtle Gradient Vignette Overlay */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/60" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
       </div>
 
-      {/* Nostalgic Emotional Entrance Overlay */}
+      {/* Emotional Entrance Overlay */}
       {!hasStarted && (
         <div 
-          onClick={startCommuteExperience}
+          onClick={startExperience}
           className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/75 backdrop-blur-2xl cursor-pointer p-6 transition-all duration-500"
         >
           <div className="flex flex-col items-center max-w-lg text-center px-4">
             
-            {/* Van Icon Badge */}
+            {/* Lotus / Puja Icon Badge */}
             <div className="mb-4 inline-flex items-center justify-center h-16 w-16 rounded-full bg-white/10 border border-white/20 shadow-2xl backdrop-blur-md animate-bounce">
-              <span className="text-3xl">🚌</span>
+              <span className="text-3xl">🪷</span>
             </div>
 
-            <h1 className="text-6xl sm:text-8xl font-extrabold text-white mb-3 font-hindi drop-shadow-[0_4px_30px_rgba(0,0,0,0.9)] tracking-tight">
-              ओम्नी वैन
+            <h1 className="text-5xl sm:text-7xl font-extrabold text-white mb-3 font-hindi drop-shadow-[0_4px_30px_rgba(0,0,0,0.9)] tracking-tight">
+              শারদ উৎসব
             </h1>
 
             <p className="text-amber-300 font-hindi font-medium text-lg sm:text-2xl tracking-wide mb-8 leading-snug drop-shadow-md">
-              "अरे बस्ता संभालो... वैन बाहर हॉर्न दे रही है!"
+              "ঢাকের বোল আর শিউলি ফুলের গন্ধ... পুজো এসে গেছে!"
             </p>
 
             <button
               type="button"
-              onClick={startCommuteExperience}
+              onClick={startExperience}
               className="group relative inline-flex items-center gap-3 rounded-full py-4 px-9 text-lg font-extrabold text-black bg-amber-400 hover:bg-amber-300 shadow-[0_0_50px_rgba(245,158,11,0.6)] transition-all hover:scale-105 active:scale-95"
             >
               <span className="h-3.5 w-3.5 rounded-full bg-black animate-ping"></span>
-              <span className="font-hindi tracking-wide">वैन में बैठो 🚌</span>
+              <span className="font-hindi tracking-wide">পুজোয় চলো 🪘</span>
             </button>
 
             <p className="text-xs sm:text-sm font-hindi text-white/60 mt-6 tracking-wider">
-              भैया ने 93.5 RED FM चला दिया है... पीछे वाली सीट तैयार है!
+              রেডিওতে মহালয়া বেজে উঠেছে... আলো জ্বলে উঠেছে প্যান্ডেলে!
             </p>
           </div>
         </div>
@@ -150,7 +136,7 @@ export default function App() {
 
         {/* Clean Top Title */}
         <div className="hidden md:flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/30 backdrop-blur-md border border-white/15">
-          <span className="text-xl font-extrabold text-white font-hindi tracking-wide">ओम्नी वैन 🚌</span>
+          <span className="text-xl font-extrabold text-white font-hindi tracking-wide">শারদ উৎসব 🪷</span>
         </div>
 
         <div className="flex items-center gap-1.5 sm:gap-2">
@@ -182,22 +168,24 @@ export default function App() {
       {/* Bottom Deck Wrapper */}
       <footer className="relative z-20 flex flex-col items-center gap-2.5 px-3 pb-4 sm:pb-6 w-full max-w-xl mx-auto">
         
-        {/* Minimal Glassmorphism "Jaldi Karo!" Button */}
-        <button
-          type="button"
-          onClick={() => {
-            const video = videoRef.current;
-            if (video) {
-              video.currentTime = 0;
-              video.volume = 1.0;
-              setIntroFinished(false);
-            }
-          }}
-          className="group/pill inline-flex items-center gap-2 rounded-full py-1.5 px-4 text-xs font-bold text-white bg-white/10 backdrop-blur-xl border border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.4)] transition hover:bg-white/25 active:scale-95 ring-1 ring-white/20"
-        >
-          <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-          <span>Jaldi Karo! 🚌</span>
-        </button>
+        {/* Scene label + Style toggle */}
+        <div className="flex items-center gap-2">
+          <div className="inline-flex items-center gap-2 rounded-full py-1.5 px-4 text-xs font-bold text-white bg-white/10 backdrop-blur-xl border border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.4)] ring-1 ring-white/20">
+            <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+            <span className="font-hindi">{activeBg.label}</span>
+            <span className="text-white/50 font-normal hidden sm:inline">· {activeBg.vibe}</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={toggleStyle}
+            className="group/pill inline-flex items-center gap-1.5 rounded-full py-1.5 px-3 text-xs font-bold text-white bg-white/10 backdrop-blur-xl border border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.4)] transition hover:bg-white/25 active:scale-95 ring-1 ring-white/20"
+            aria-label="Switch image style"
+          >
+            <Images className="w-3.5 h-3.5" />
+            <span className="uppercase tracking-wide">{styleName === BACKGROUND_STYLES[0] ? 'Style 1' : 'Style 2'}</span>
+          </button>
+        </div>
 
         {/* Bottom Music Player Pill */}
         <AudioPlayer

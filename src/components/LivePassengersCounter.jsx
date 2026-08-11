@@ -29,7 +29,7 @@ export default function LivePassengersCounter() {
         <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.9)]"></span>
       </span>
       <span className="font-semibold tabular-nums text-emerald-300">{passengerCount}</span>
-      <span className="text-white/80 text-xs font-normal">kids in van on board</span>
+      <span className="text-white/80 text-xs font-normal">pandal hoppers online</span>
     </div>
   );
 }

@@ -1,3 +1,16 @@
+// Durga Puja background scenes. Each song can point to one of these via `bg`.
+// Same filenames exist in both `style1` and `style2` folders — user can toggle style.
+export const BACKGROUNDS = [
+  { id: "mohaloya", file: "mohaloya.png", label: "Mahalaya", vibe: "Dawn of Devi Paksha" },
+  { id: "kumortuli", file: "kumortuli.png", label: "Kumortuli", vibe: "Idols taking shape" },
+  { id: "bonedi1", file: "bonedi1.png", label: "Bonedi Bari", vibe: "Old family courtyard" },
+  { id: "bonedi2", file: "bonedi2.png", label: "Bonedi Bari II", vibe: "Heritage aarti" },
+  { id: "pandal", file: "pandal.png", label: "Pandal", vibe: "Pandal hopping" },
+  { id: "night", file: "night.png", label: "Night Lights", vibe: "Illuminated streets" },
+];
+
+export const BACKGROUND_STYLES = ["style1", "style2"];
+
 export const OMNI_PLAYLIST = [
   {
     id: "aahun-aahun",

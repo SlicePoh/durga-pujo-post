@@ -32,8 +32,8 @@ export default function PlaylistDrawer({ isOpen, onClose, currentTrackIndex, onS
               <Music className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white tracking-wide">2008–2012 School Van Playlist</h2>
-              <p className="text-xs text-white/60">Selected bangers from Nokia XpressMusic & Radio Mirchi era</p>
+              <h2 className="text-lg font-bold text-white tracking-wide">Durga Puja Playlist</h2>
+              <p className="text-xs text-white/60">Songs to soundtrack your pandal hopping · Shdrod Utsob</p>
             </div>
           </div>
           
@@ -72,7 +72,7 @@ export default function PlaylistDrawer({ isOpen, onClose, currentTrackIndex, onS
         <div className="flex flex-col sm:flex-row items-center gap-2 mb-4">
           <input 
             type="text" 
-            placeholder="Search 2008-2012 song, artist, movie..."
+            placeholder="Search song, artist, movie..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full px-4 py-2 rounded-xl bg-white/5 border border-white/15 text-sm text-white placeholder-white/40 focus:outline-none focus:border-amber-400/60"
