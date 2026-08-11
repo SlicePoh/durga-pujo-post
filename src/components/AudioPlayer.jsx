@@ -13,27 +13,29 @@ const AudioPlayer = forwardRef(({
   currentTrackIndex, 
   onTrackChange, 
   onOpenPlaylist, 
-  musicVolume = 0.20, 
-  customTrackId = null,
-  hasStarted = false
+  musicVolume = 1.0, 
+  isPlaying = false,
+  onPlayingChange
 }, ref) => {
-  const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState({ current: 0, duration: 0 });
 
   const audioRef = useRef(null);
   const isFirstMountRef = useRef(true);
 
-  const activeTrack = customTrackId 
-    ? {
-        title: "Custom Stream",
-        artist: "YouTube Stream",
-        movie: "User Selected",
-        cover: PUJA_PLAYLIST[0].cover,
-        audioUrl: PUJA_PLAYLIST[0].audioUrl
-      }
-    : PUJA_PLAYLIST[currentTrackIndex] || PUJA_PLAYLIST[0];
+  const activeTrack = PUJA_PLAYLIST[currentTrackIndex] || PUJA_PLAYLIST[0];
 
-  // Guaranteed Initial Start for Aahun Aahun from 0:00 at 20% Volume
+  const togglePlay = useCallback(() => {
+    const aud = audioRef.current;
+    if (!aud) return;
+    if (isPlaying) {
+      aud.pause();
+      onPlayingChange(false);
+    } else {
+      aud.play().then(() => onPlayingChange(true)).catch(e => console.log('Toggle error:', e));
+    }
+  }, [isPlaying, onPlayingChange]);
+
+  // Guaranteed Initial Start
   useImperativeHandle(ref, () => ({
     startPlayback: () => {
       const aud = audioRef.current;
@@ -44,10 +46,11 @@ const AudioPlayer = forwardRef(({
         aud.load();
         const playPromise = aud.play();
         if (playPromise !== undefined) {
-          playPromise.then(() => setIsPlaying(true)).catch(err => console.log("Audio start error:", err));
+          playPromise.then(() => onPlayingChange(true)).catch(err => console.log("Audio start error:", err));
         }
       }
-    }
+    },
+    togglePlay
   }));
 
   // Clean, Non-Stuck Track Switching Routine
@@ -63,24 +66,21 @@ const AudioPlayer = forwardRef(({
     const playPromise = aud.play();
     if (playPromise !== undefined) {
       playPromise
-        .then(() => setIsPlaying(true))
+        .then(() => onPlayingChange(true))
         .catch(err => {
           console.log("Play pending network buffering:", err);
         });
     }
-  }, [activeTrack, musicVolume]);
+  }, [activeTrack, musicVolume, onPlayingChange]);
 
-  // Handle Track Index Changes (Skip initial mount if experience hasn't started)
+  // Handle Track Index Changes (Skip initial mount)
   useEffect(() => {
     if (isFirstMountRef.current) {
       isFirstMountRef.current = false;
       return;
     }
-
-    if (hasStarted) {
-      loadAndPlayTrack();
-    }
-  }, [currentTrackIndex, hasStarted]);
+    loadAndPlayTrack();
+  }, [currentTrackIndex]);
 
   // Synchronize Volume Smoothly on the single audio line
   useEffect(() => {
@@ -100,17 +100,6 @@ const AudioPlayer = forwardRef(({
     }, 400);
     return () => clearInterval(interval);
   }, []);
-
-  const togglePlay = () => {
-    const aud = audioRef.current;
-    if (!aud) return;
-    if (isPlaying) {
-      aud.pause();
-      setIsPlaying(false);
-    } else {
-      aud.play().then(() => setIsPlaying(true)).catch(e => console.log('Toggle error:', e));
-    }
-  };
 
   const handleSeek = (e) => {
     const aud = audioRef.current;
@@ -132,17 +121,17 @@ const AudioPlayer = forwardRef(({
         src={activeTrack.audioUrl} 
         preload="auto"
         onCanPlay={() => {
-          if (hasStarted && audioRef.current && audioRef.current.paused) {
-            audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+          if (audioRef.current && audioRef.current.paused && !isFirstMountRef.current) {
+            audioRef.current.play().then(() => onPlayingChange(true)).catch(() => {});
           }
         }}
         onEnded={() => {
-          setIsPlaying(false);
+          onPlayingChange(false);
           onTrackChange((currentTrackIndex + 1) % PUJA_PLAYLIST.length);
         }}
       />
 
-      <div className="group relative flex items-center gap-2.5 sm:gap-4 rounded-3xl sm:rounded-full p-2.5 sm:p-3 pr-3 sm:pr-5 bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 shadow-[0_8px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.25)]">
+      <div className="group relative flex items-center gap-2.5 sm:gap-4 rounded-3xl sm:rounded-full p-2.5 sm:p-3 pr-3 sm:pr-5 bg-white/10 backdrop-blur-xs backdrop-saturate-150 border border-white/20 shadow-[0_8px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.25)]">
         {/* Cover Art */}
         <div className="relative h-14 w-14 sm:h-16 sm:w-16 shrink-0">
           <div className={`h-full w-full rounded-full overflow-hidden shadow-lg ring-1 ring-white/20 ${isPlaying ? 'animate-spin-slow' : 'opacity-90'}`}>

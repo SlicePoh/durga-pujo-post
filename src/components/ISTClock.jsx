@@ -25,7 +25,7 @@ export default function ISTClock() {
   }, []);
 
   return (
-    <div className="fixed left-5 top-5 z-30 flex items-center gap-3">
+    <div className="z-30 flex items-center gap-3">
       <div className="glass-pill px-3.5 py-1.5 rounded-full flex items-center gap-2 text-sm font-medium text-white shadow-lg border border-white/20">
         <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
         {timeState ? (

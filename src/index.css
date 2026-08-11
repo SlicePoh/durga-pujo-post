@@ -1,5 +1,24 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Sorolota';
+  src: url('/bengali font/Unicode/Li Sabbir Sorolota Unicode.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Sorolota';
+  src: url('/bengali font/Unicode/Li Sabbir Sorolota Unicode Italic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@theme {
+  --font-sans: 'Urbanist', sans-serif;
+  --font-hindi: 'Sorolota', sans-serif;
+}
+
 @layer utilities {
   .glass-panel {
     background: rgba(15, 23, 42, 0.55);
