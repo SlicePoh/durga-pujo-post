@@ -98,9 +98,9 @@ export default function App() {
     if (customEmbed?.type === 'spotify') {
       return (
         <div className="w-full max-w-xl mx-auto z-30">
-          <div className="relative flex items-center gap-2.5 sm:gap-4 rounded-2xl p-2 sm:p-2.5 pr-3 sm:pr-4 bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 shadow-[0_8px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.25)]">
+          <div className="relative flex items-center gap-2 sm:gap-4 rounded-2xl p-1.5 sm:p-2.5 pr-2 sm:pr-4 bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 shadow-[0_8px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.25)]">
             {/* Embed area */}
-            <div className="flex-1 min-w-0 rounded-2xl overflow-hidden h-20">
+            <div className="flex-1 min-w-0 rounded-xl sm:rounded-2xl overflow-hidden h-20">
               <iframe
                 src={`https://open.spotify.com/embed/track/${customEmbed.id}?utm_source=generator&theme=0`}
                 className="w-full h-20 border-0"
@@ -114,18 +114,18 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setIsPlaylistOpen(true)}
-                className="grid h-9 w-9 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white active:scale-95"
+                className="grid h-7 w-7 sm:h-9 sm:w-9 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white active:scale-95"
                 aria-label="Open Playlist"
               >
-                <ListMusic className="w-4 h-4" />
+                <ListMusic className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
               <button
                 type="button"
                 onClick={() => setCustomEmbed(null)}
-                className="grid h-9 w-9 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white active:scale-95"
+                className="grid h-7 w-7 sm:h-9 sm:w-9 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white active:scale-95"
                 aria-label="Close custom player"
               >
-                <X className="w-4 h-4" />
+                <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
             </div>
           </div>
@@ -156,7 +156,7 @@ export default function App() {
       </div>
 
       {/* Top Header Controls Bar */}
-      <header className="relative z-20 w-full px-4 pt-3 sm:pt-5 max-w-7xl mx-auto grid grid-cols-3 items-center">
+      <header className="relative z-20 w-full px-2 sm:px-4 pt-2 sm:pt-5 max-w-7xl mx-auto grid grid-cols-3 items-center">
         {/* Left: Clock */}
         <div className="flex items-center justify-start">
           <ISTClock />
@@ -164,18 +164,18 @@ export default function App() {
 
         {/* Center: Bengali text */}
         <div className="flex items-center justify-center">
-            <span className="text-2xl sm:text-5xl font-medium text-white font-hindi tracking-wide">শারদীয় উৎসব</span>
+            <span className="text-lg sm:text-2xl md:text-4xl font-medium text-white font-hindi tracking-wide whitespace-nowrap">শারদীয় উৎসব</span>
         </div>
 
         {/* Right: Spotify & YT Music buttons */}
-        <div className="flex items-center justify-end gap-1.5 sm:gap-2">
+        <div className="flex items-center justify-end gap-1 sm:gap-2">
           <a 
             href={SPOTIFY_PLAYLIST_URL} 
             target="_blank" 
             rel="noreferrer" 
-            className="group/pill flex items-center gap-1.5 rounded-full text-xs sm:text-sm font-medium text-white px-3 py-1.5 bg-black/40 backdrop-blur-md border border-white/20 shadow-md transition hover:bg-white/20 active:scale-95"
+            className="group/pill flex items-center gap-1 sm:gap-1.5 rounded-full text-[10px] sm:text-sm font-medium text-white px-2 py-1 sm:px-3 sm:py-1.5 bg-black/40 backdrop-blur-md border border-white/20 shadow-md transition hover:bg-white/20 active:scale-95"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="white" className="shrink-0"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z"></path></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="white" className="shrink-0 sm:w-4 sm:h-4"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z"></path></svg>
             <span className="hidden sm:inline">Spotify Playlist</span>
           </a>
 
@@ -195,12 +195,12 @@ export default function App() {
       <div className="flex-1 pointer-events-none" />
 
       {/* Bottom Deck Wrapper */}
-      <footer className="relative z-20 flex flex-col items-center gap-2.5 px-3 pb-4 sm:pb-6 w-full max-w-xl mx-auto">
+      <footer className="relative z-20 flex flex-col items-center gap-2 sm:gap-2.5 px-2 sm:px-3 pb-3 sm:pb-6 w-full max-w-xl mx-auto">
         
         {/* Scene label + Style toggle */}
-        <div className="flex items-center gap-2">
-          <div className="inline-flex items-center gap-2 rounded-full py-1.5 px-4 text-xs font-bold text-white bg-white/10 backdrop-blur-xl border border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.4)] ring-1 ring-white/20">
-            <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full py-1 sm:py-1.5 px-2.5 sm:px-4 text-[10px] sm:text-xs font-bold text-white bg-white/10 backdrop-blur-xl border border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.4)] ring-1 ring-white/20">
+            <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-amber-400 animate-pulse"></span>
             <span className="font-hindi">{activeBg.label}</span>
             <span className="text-white/50 font-normal hidden sm:inline">· {activeBg.vibe}</span>
           </div>
@@ -208,10 +208,10 @@ export default function App() {
           <button
             type="button"
             onClick={toggleStyle}
-            className="group/pill inline-flex items-center gap-1.5 rounded-full py-1.5 px-3 text-xs font-bold text-white bg-white/10 backdrop-blur-xl border border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.4)] transition hover:bg-white/25 active:scale-95 ring-1 ring-white/20"
+            className="group/pill inline-flex items-center gap-1 sm:gap-1.5 rounded-full py-1 sm:py-1.5 px-2 sm:px-3 text-[10px] sm:text-xs font-bold text-white bg-white/10 backdrop-blur-xl border border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.4)] transition hover:bg-white/25 active:scale-95 ring-1 ring-white/20"
             aria-label="Switch image style"
           >
-            <Images className="w-3.5 h-3.5" />
+            <Images className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             <span className="uppercase tracking-wide">{styleName === BACKGROUND_STYLES[0] ? 'Editorial' : 'Cinematic'}</span>
           </button>
         </div>

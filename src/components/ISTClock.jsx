@@ -25,18 +25,18 @@ export default function ISTClock() {
   }, []);
 
   return (
-    <div className="z-30 flex items-center gap-3">
-      <div className="glass-pill px-3.5 py-1.5 rounded-full flex items-center gap-2 text-sm font-medium text-white shadow-lg border border-white/20">
-        <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+    <div className="z-30 flex items-center">
+      <div className="glass-pill px-1 py-1 sm:px-3 sm:py-1.5 rounded-full flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium text-white shadow-lg border border-white/20">
+        <span className="inline-block w-1 h-1 sm:w-2 sm:h-2 rounded-full bg-amber-400 animate-pulse"></span>
         {timeState ? (
           <div className="flex items-center font-mono tabular-nums">
-            <span className="font-semibold">{timeState.hour}</span>
+            <span className="text-xs md:text-md font-medium md:font-semibold">{timeState.hour}</span>
             <span className="animate-[blink_1s_step-end_infinite] mx-0.5 text-amber-400 font-bold">:</span>
-            <span className="font-semibold">{timeState.minute}</span>
-            <span className="ml-1.5 text-xs text-amber-200/80 uppercase tracking-wider">{timeState.period} IST</span>
+            <span className="text-xs md:text-md font-medium md:font-semibold">{timeState.minute}</span>
+            <span className="ml-1 sm:ml-1.5 text-[10px] sm:text-xs text-amber-200/80 uppercase tracking-wider">{timeState.period} IST</span>
           </div>
         ) : (
-          <span className="text-white/60 text-xs">7:15 AM IST</span>
+          <span className="text-white/60 text-[10px] sm:text-xs">7:15 AM IST</span>
         )}
       </div>
     </div>
