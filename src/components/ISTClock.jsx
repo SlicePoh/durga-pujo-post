@@ -39,10 +39,6 @@ export default function ISTClock() {
           <span className="text-white/60 text-xs">7:15 AM IST</span>
         )}
       </div>
-
-      <div className="hidden md:inline-flex glass-pill px-3 py-1.5 rounded-full text-xs text-amber-200/90 font-medium tracking-wide">
-        🪷 Durga Puja · Sharod Utsob
-      </div>
     </div>
   );
 }

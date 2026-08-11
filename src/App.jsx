@@ -134,7 +134,7 @@ export default function App() {
 
         {/* Clean Top Title */}
         <div className="hidden md:flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/30 backdrop-blur-md border border-white/15">
-          <span className="text-xl font-extrabold text-white font-hindi tracking-wide">শারদ উৎসব 🪷</span>
+          <span className="text-xl font-extrabold text-white font-hindi tracking-wide">শারদীয় উৎসব</span>
         </div>
 
         <div className="flex items-center gap-1.5 sm:gap-2">

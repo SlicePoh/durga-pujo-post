@@ -37,7 +37,7 @@ export const PUJA_PLAYLIST = [
     artist: "Monali Thakur & Guddu",
     movie: "Dugga Elo (2019)",
     cover: "https://i.scdn.co/image/ab67616d00001e02877df1f4d86607531a93ead2",
-    bg: "pandal"
+    bg: "mohaloya"
   },
   {
     id: "dugga-ma",
@@ -55,7 +55,7 @@ export const PUJA_PLAYLIST = [
     artist: "Shreya Ghoshal & Jeet Gannguli",
     movie: "Dhak Baja Kashor Baja (2016)",
     cover: "https://i.scdn.co/image/ab67616d00001e0221792f8da1279de3b03b4b80",
-    bg: "pandal"
+    bg: "bonedi2"
   },
   {
     id: "dhaker-taley",
@@ -91,7 +91,7 @@ export const PUJA_PLAYLIST = [
     artist: "Asha Bhosle",
     movie: "Katha Hoyechhilo (2023)",
     cover: "https://i.scdn.co/image/ab67616d00001e02c503a1a8f61453b187e65441",
-    bg: "bonedi2"
+    bg: "night"
   },
   {
     id: "ekta-deshlai",
@@ -100,7 +100,7 @@ export const PUJA_PLAYLIST = [
     artist: "Asha Bhosle & R. D. Burman",
     movie: "Puja Hits 81â€“84",
     cover: "https://i.scdn.co/image/ab67616d00001e027e16ff5c21b1e73830514660",
-    bg: "bonedi1"
+    bg: "night"
   },
   {
     id: "kine-de-reshmi",
@@ -109,7 +109,7 @@ export const PUJA_PLAYLIST = [
     artist: "Asha Bhosle & R. D. Burman",
     movie: "Serashilpi Seragaan (1983)",
     cover: "https://i.scdn.co/image/ab67616d00001e020696b46de071010225b7cd4c",
-    bg: "bonedi2"
+    bg: "pandal"
   },
   {
     id: "chirodini-tumi",
@@ -118,7 +118,7 @@ export const PUJA_PLAYLIST = [
     artist: "Kishore Kumar",
     movie: "Amor Sanghi (1987)",
     cover: "https://i.scdn.co/image/ab67616d00001e02d60dfc26dd405ebb9ae11ef9",
-    bg: "night"
+    bg: "pandal"
   },
   {
     id: "aaj-ei-dintake",
@@ -136,7 +136,7 @@ export const PUJA_PLAYLIST = [
     artist: "Hemanta Mukherjee",
     movie: "Bengali Monsoon Hits",
     cover: "https://i.scdn.co/image/ab67616d00001e02f491a7122a0f3d468668b85c",
-    bg: "kumortuli"
+    bg: "pandal"
   },
   {
     id: "priyotama",
@@ -145,7 +145,7 @@ export const PUJA_PLAYLIST = [
     artist: "Kumar Sanu",
     movie: "Naktala Udayan Sangha (2009)",
     cover: "https://i.scdn.co/image/ab67616d00001e02d7442b40644b339907f7dd1d",
-    bg: "bonedi1"
+    bg: "pandal"
   },
   {
     id: "ebar-jeno",
@@ -154,7 +154,7 @@ export const PUJA_PLAYLIST = [
     artist: "Nakash Aziz, Antara Mitra & Indraadip Dasgupta",
     movie: "Yoddha (2014)",
     cover: "https://i.scdn.co/image/ab67616d00001e02dff82889c347a6db8a7e4fe5",
-    bg: "pandal"
+    bg: "bonedi2"
   },
   {
     id: "shundori-komola",
@@ -199,7 +199,7 @@ export const PUJA_PLAYLIST = [
     artist: "Amit Trivedi & Altamash Faridi",
     movie: "Mrs. Chatterjee Vs Norway (2023)",
     cover: "https://i.scdn.co/image/ab67616d00001e02cd14760154723de30cbf1b3d",
-    bg: "pandal"
+    bg: "bonedi1"
   },
   {
     id: "uma-ashe",
@@ -217,9 +217,10 @@ export const PUJA_PLAYLIST = [
     artist: "Mita Chatterjee",
     movie: "Sukheri Chowate (2018)",
     cover: "https://i.scdn.co/image/ab67616d00001e024084058303be1a2542d3f556",
-    bg: "bonedi1"
+    bg: "pandal"
   }
 ];
 
 export const SPOTIFY_PLAYLIST_URL = "https://open.spotify.com/playlist/7FIG5Rc1VdN41ub2rZUNcP";
 export const YOUTUBE_MUSIC_PLAYLIST_URL = "https://music.youtube.com/playlist?list=PLakxceWWkI7w";
+export const SPOTIFY_EMBED_SRC = "https://open.spotify.com/embed/playlist/7FIG5Rc1VdN41ub2rZUNcP?utm_source=generator&si=32b38e06c09a4ef9";

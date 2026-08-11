@@ -33,7 +33,7 @@ export default function PlaylistDrawer({ isOpen, onClose, currentTrackIndex, onS
             </div>
             <div>
               <h2 className="text-lg font-bold text-white tracking-wide">Durga Puja Playlist</h2>
-              <p className="text-xs text-white/60">Songs to soundtrack your pandal hopping · Shdrod Utsob</p>
+              <p className="text-xs text-white/60">Songs to serenade your pandal hopping · Sharod Utsob</p>
             </div>
           </div>
           
